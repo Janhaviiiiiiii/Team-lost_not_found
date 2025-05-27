@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-import google.generativeai as genai
+from google import genai
 import json
 import os
 from dotenv import load_dotenv
@@ -11,9 +11,10 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise ValueError("Missing GEMINI_API_KEY in .env file")
 
-genai.configure(api_key=GEMINI_API_KEY)
+# Initialize the client
+client = genai.Client(api_key=GEMINI_API_KEY)
 
-# Use a more explicit safety setting for production
+# Safety settings configuration
 safety_settings = [
     {
         "category": "HARM_CATEGORY_HARASSMENT",
@@ -39,12 +40,6 @@ generation_config = {
     "top_k": 40,
     "max_output_tokens": 512,
 }
-# Initialize the model with both generation_config and safety_settings
-gemini_model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash-002", 
-    generation_config=generation_config, 
-    safety_settings=safety_settings # Add safety settings here
-)
 
 # File path for persistent data
 USER_DATA_FILE = os.path.join(os.path.dirname(__file__), 'user_data.json')
@@ -127,14 +122,12 @@ Now the user is asking:
 
 Always keep your replies within 100 words and Give a helpful, friendly, and personalized answer based on their data and predictions.
 """
-        # Create a GenerativeModel instance for chat
-        model = genai.GenerativeModel('gemini-1.5-flash-002')
 
-        # Start a chat session
-        chat_session = model.start_chat(history=[])
-        
-        # Send the message and get the response
-        response = chat_session.send_message(full_prompt)
+        # Generate content using the client (simplified approach)
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=full_prompt
+        )
         
         return jsonify({"response": response.text})
 
