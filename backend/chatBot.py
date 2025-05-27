@@ -1,5 +1,3 @@
-# backend/chatbot.py
-
 from flask import Blueprint, request, jsonify
 import google.generativeai as genai
 import json
@@ -15,13 +13,38 @@ if not GEMINI_API_KEY:
 
 genai.configure(api_key=GEMINI_API_KEY)
 
+# Use a more explicit safety setting for production
+safety_settings = [
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE"
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_NONE"
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_NONE"
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_NONE"
+    },
+]
+
 generation_config = {
     "temperature": 0.7,
     "top_p": 1,
     "top_k": 40,
     "max_output_tokens": 512,
 }
-gemini_model = genai.GenerativeModel(model_name="gemini-1.5-flash-002", generation_config=generation_config)
+# Initialize the model with both generation_config and safety_settings
+gemini_model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash-002", 
+    generation_config=generation_config, 
+    safety_settings=safety_settings # Add safety settings here
+)
 
 # File path for persistent data
 USER_DATA_FILE = os.path.join(os.path.dirname(__file__), 'user_data.json')
@@ -56,6 +79,11 @@ def chat():
         input_data = latest.get("input", {})
         output_data = latest.get("output", {})
 
+        # Accessing nested dictionaries safely
+        savings_model_output = output_data.get("savings_model", {})
+        amount_model_output = output_data.get("amount_model", {})
+        multi_task_model_output = output_data.get("multi_task_model", {})
+
         full_prompt = f"""
 You are a Personal Finance Advisor chatbot.
 The user recently submitted this financial profile:
@@ -89,19 +117,28 @@ Potential Savings Breakdown:
  - Miscellaneous: ₹{input_data.get("Potential_Savings_Miscellaneous", "N/A")}
 
 Prediction Results:
-Can Achieve Savings: {'✅ Yes' if output_data['savings_model'].get('can_achieve_savings') else '❌ No'}
-Confidence: {output_data['savings_model'].get('confidence', 0) * 100:.2f}%
-Recommended Monthly Savings: ₹{output_data['amount_model'].get('recommended_savings', 0):,.2f}
-Financial Risk: {'⚠️ Yes' if output_data['multi_task_model'].get('financial_risk') else '✅ No'}
+Can Achieve Savings: {'✅ Yes' if savings_model_output.get('can_achieve_savings') else '❌ No'}
+Confidence: {savings_model_output.get('confidence', 0) * 100:.2f}%
+Recommended Monthly Savings: ₹{amount_model_output.get('recommended_savings', 0):,.2f}
+Financial Risk: {'⚠️ Yes' if multi_task_model_output.get('financial_risk') else '✅ No'}
 
 Now the user is asking:
 "{user_message}"
 
 Always keep your replies within 100 words and Give a helpful, friendly, and personalized answer based on their data and predictions.
 """
+        # Create a GenerativeModel instance for chat
+        model = genai.GenerativeModel('gemini-1.5-flash-002')
 
-        response = gemini_model.generate_content(full_prompt)
+        # Start a chat session
+        chat_session = model.start_chat(history=[])
+        
+        # Send the message and get the response
+        response = chat_session.send_message(full_prompt)
+        
         return jsonify({"response": response.text})
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # Log the exception for debugging purposes
+        print(f"Error in chat endpoint: {e}")
+        return jsonify({"error": "An internal server error occurred. Please try again later."}), 500
