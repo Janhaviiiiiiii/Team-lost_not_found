@@ -3,168 +3,198 @@ import numpy as np
 import tensorflow as tf
 import json
 import os
+from datetime import datetime
+import threading
+import warnings
+# Import chatbot blueprint
+from chatBot import chat_bp as chat_app
+
+# Initialize Flask app
+app = Flask(__name__)
+
+
+
+# Suppress TensorFlow warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+warnings.filterwarnings('ignore', category=UserWarning, module='keras')
 
 app = Flask(__name__)
 
 # Paths
 MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'model')
 FEATURE_INFO_FILE = os.path.join(MODEL_DIR, 'feature_info.json')
+USER_DATA_FILE = os.path.join(os.path.dirname(__file__), 'user_data.json')
 
-if not os.path.exists(FEATURE_INFO_FILE):
-    raise FileNotFoundError(f"Missing required file: {FEATURE_INFO_FILE}")
-
+# Load feature info
 with open(FEATURE_INFO_FILE, 'r') as f:
     feature_info = json.load(f)
 
-# Pre-compute feature order for efficiency
 FEATURE_ORDER = feature_info['numerical_features'] + feature_info['categorical_features']
 TOTAL_FEATURES = len(FEATURE_ORDER)
 
-# Load models once at startup
-try:
-    savings_model = tf.keras.models.load_model(
-        os.path.join(MODEL_DIR, 'trained_model/best_savings_model.keras'), compile=False)
-    amount_model = tf.keras.models.load_model(
-        os.path.join(MODEL_DIR, 'trained_model/best_amount_model.keras'), compile=False)
-    multi_task_model = tf.keras.models.load_model(
-        os.path.join(MODEL_DIR, 'trained_model/best_multi_task_model.keras'), compile=False)
-except Exception as e:
-    raise RuntimeError(f"Error loading models: {e}")
+# Load models once
+models = {}
+for name in ['savings', 'amount', 'multi_task']:
+    models[name] = tf.keras.models.load_model(
+        os.path.join(MODEL_DIR, f'trained_model/best_{name}_model.keras'), compile=False)
+
+# Thread lock for file operations
+file_lock = threading.Lock()
+
+def save_user_data(input_data, output_data):
+    """Save user input and output to JSON file asynchronously"""
+    def _save():
+        try:
+            with file_lock:
+                # Create new data structure with only the current entry
+                data = {
+                    "predictions": [{
+                        "timestamp": datetime.now().isoformat(),
+                        "input": input_data,
+                        "output": output_data
+                    }]
+                }
+                
+                # Save to file, overwriting any existing content
+                with open(USER_DATA_FILE, 'w') as f:
+                    json.dump(data, f, indent=2)
+        except Exception as e:
+            print(f"Error saving user data: {e}")
+    
+    # Run in background thread
+    threading.Thread(target=_save, daemon=True).start()
 
 def process_features(data):
-    """Efficiently process input data into feature vector"""
+    """Process input data into feature vector"""
+    # Extract and convert all inputs
+    base_data = {
+        "Income": float(data["Income"]),
+        "Age": int(data["Age"]),
+        "Dependents": int(data["Dependents"]),
+        "Desired_Savings_Percentage": float(data["Desired_Savings_Percentage"]),
+        "Disposable_Income": float(data["Disposable_Income"])
+    }
     
-    # Extract base features
-    income = float(data["Income"])
-    age = int(data["Age"])
-    dependents = int(data["Dependents"])
-    occupation = data["Occupation"]
-    city_tier = data["City_Tier"]
+    # Expenses and potential savings
+    expense_keys = ["Rent", "Loan_Repayment", "Insurance", "Groceries", "Transport",
+                   "Eating_Out", "Entertainment", "Utilities", "Healthcare", "Education", "Miscellaneous"]
+    potential_keys = [f"Potential_Savings_{k}" for k in ["Groceries", "Transport", "Eating_Out", 
+                     "Entertainment", "Utilities", "Healthcare", "Education", "Miscellaneous"]]
     
-    # Expenses
-    expenses = {k: float(data[k]) for k in [
-        "Rent", "Loan_Repayment", "Insurance", "Groceries", "Transport",
-        "Eating_Out", "Entertainment", "Utilities", "Healthcare", 
-        "Education", "Miscellaneous"
-    ]}
+    expenses = {k: float(data[k]) for k in expense_keys}
+    potential_savings = {k: float(data[k]) for k in potential_keys}
     
-    desired_savings_pct = float(data["Desired_Savings_Percentage"])
-    disposable_income = float(data["Disposable_Income"])
-    
-    # Potential savings
-    potential_savings = {k: float(data[k]) for k in [
-        "Potential_Savings_Groceries", "Potential_Savings_Transport",
-        "Potential_Savings_Eating_Out", "Potential_Savings_Entertainment",
-        "Potential_Savings_Utilities", "Potential_Savings_Healthcare",
-        "Potential_Savings_Education", "Potential_Savings_Miscellaneous"
-    ]}
-    
-    # Compute derived features efficiently
+    # Compute derived features
     total_expenses = sum(expenses.values())
     essential_expenses = sum(expenses[k] for k in ["Rent", "Loan_Repayment", "Groceries", "Transport", "Utilities", "Healthcare"])
     actual_savings_potential = sum(potential_savings.values())
     
-    # Build feature array using dictionary for cleaner code
-    features = {}
-    
-    # Numerical features
-    features.update({
-        "Income": income,
-        "Age": age,
-        "Dependents": dependents,
+    # Build feature dictionary
+    features = {
+        **base_data,
         **expenses,
-        "Desired_Savings_Percentage": desired_savings_pct,
-        "Disposable_Income": disposable_income,
         **potential_savings,
-        "Savings_Rate": desired_savings_pct / 100,
+        "Savings_Rate": base_data["Desired_Savings_Percentage"] / 100,
         "Actual_Savings_Potential": actual_savings_potential,
         "Essential_Expenses": essential_expenses,
-        "Essential_Expense_Ratio": essential_expenses / income,
-        "Non_Essential_Income": income - essential_expenses,
-        "Expense_Efficiency": actual_savings_potential / disposable_income if disposable_income > 0 else 0,
+        "Essential_Expense_Ratio": essential_expenses / base_data["Income"],
+        "Non_Essential_Income": base_data["Income"] - essential_expenses,
+        "Expense_Efficiency": actual_savings_potential / base_data["Disposable_Income"] if base_data["Disposable_Income"] > 0 else 0,
         "Total_Expenses": total_expenses,
-        "Debt_to_Income_Ratio": expenses["Loan_Repayment"] / income,
-        "Financial_Stress_Score": 1 - (disposable_income / income)
-    })
+        "Debt_to_Income_Ratio": expenses["Loan_Repayment"] / base_data["Income"],
+        "Financial_Stress_Score": 1 - (base_data["Disposable_Income"] / base_data["Income"]),
+        
+        # Categorical features (one-hot encoding)
+        "Occupation_Retired": int(data["Occupation"] == "Retired"),
+        "Occupation_Self_Employed": int(data["Occupation"] == "Self_Employed"),
+        "Occupation_Student": int(data["Occupation"] == "Student"),
+        "City_Tier_Tier_2": int(data["City_Tier"] == "Tier_2"),
+        "City_Tier_Tier_3": int(data["City_Tier"] == "Tier_3"),
+        "Age_Group_Young_Adult": int(base_data["Age"] < 25),
+        "Age_Group_Mid_Career": int(25 <= base_data["Age"] < 40),
+        "Age_Group_Pre_Retirement": int(40 <= base_data["Age"] < 60),
+        "Age_Group_Senior": int(base_data["Age"] >= 60),
+        "Income_Bracket_Low_Income": int(base_data["Income"] < 20000),
+        "Income_Bracket_Lower_Mid": int(20000 <= base_data["Income"] < 40000),
+        "Income_Bracket_Middle": int(40000 <= base_data["Income"] < 70000),
+        "Income_Bracket_Upper_Mid": int(base_data["Income"] >= 70000),
+        "Savings_Difficulty_Moderate": 0,
+        "Savings_Difficulty_Very_Hard": 0,
+        "Savings_Difficulty_nan": 1
+    }
     
-    # Categorical features (one-hot encoding)
-    features.update({
-        "Occupation_Retired": int(occupation == "Retired"),
-        "Occupation_Self_Employed": int(occupation == "Self_Employed"),
-        "Occupation_Student": int(occupation == "Student"),
-        "City_Tier_Tier_2": int(city_tier == "Tier_2"),
-        "City_Tier_Tier_3": int(city_tier == "Tier_3"),
-        "Age_Group_Young_Adult": int(age < 25),
-        "Age_Group_Mid_Career": int(25 <= age < 40),
-        "Age_Group_Pre_Retirement": int(40 <= age < 60),
-        "Age_Group_Senior": int(age >= 60),
-        "Income_Bracket_Low_Income": int(income < 20000),
-        "Income_Bracket_Lower_Mid": int(20000 <= income < 40000),
-        "Income_Bracket_Middle": int(40000 <= income < 70000),
-        "Income_Bracket_Upper_Mid": int(income >= 70000),
-        "Savings_Difficulty_Moderate": 0,  # Placeholder - adjust based on your logic
-        "Savings_Difficulty_Very_Hard": 0,  # Placeholder - adjust based on your logic
-        "Savings_Difficulty_nan": 1  # Default fallback
-    })
-    
-    # Create feature vector in correct order
-    feature_vector = np.array([features[feature_name] for feature_name in FEATURE_ORDER], dtype=np.float32)
-    
-    return feature_vector.reshape(1, -1)
+    return np.array([features[name] for name in FEATURE_ORDER], dtype=np.float32).reshape(1, -1)
 
 @app.route('/')
 def home():
-    return jsonify({"message": "Savings Prediction API Running!", "features_expected": TOTAL_FEATURES})
+    return jsonify({"message": "Savings Prediction API", "features": TOTAL_FEATURES, "status": "running"})
+
+# Register the chat blueprint under /chat
+app.register_blueprint(chat_app, url_prefix='/chat')
 
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
         data = request.get_json()
-        if not isinstance(data, dict):
-            return jsonify({"error": "Input must be a JSON object"}), 400
+        if not data:
+            return jsonify({"error": "No JSON data provided"}), 400
         
         # Process features
         X = process_features(data)
         
-        # Validate feature count
-        if X.shape[1] != TOTAL_FEATURES:
-            return jsonify({"error": f"Feature mismatch: expected {TOTAL_FEATURES}, got {X.shape[1]}"}), 400
+        # Get predictions with suppressed warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            predictions = {name: model.predict(X, verbose=0) for name, model in models.items()}
         
-        # Run predictions in parallel (TensorFlow handles this efficiently)
-        pred_savings = savings_model.predict(X, verbose=0)[0][0]
-        pred_amount = amount_model.predict(X, verbose=0)[0][0]
-        pred_multi = multi_task_model.predict(X, verbose=0)
-        
-        # Build response
+        # Format results
         result = {
             "savings_model": {
-                "can_achieve_savings": bool(pred_savings > 0.5),
-                "confidence": float(pred_savings)
+                "can_achieve_savings": bool(predictions['savings'][0][0] > 0.5),
+                "confidence": float(predictions['savings'][0][0])
             },
             "amount_model": {
-                "recommended_savings": float(pred_amount)
+                "recommended_savings": float(predictions['amount'][0][0])
             },
             "multi_task_model": {
-                "can_achieve_savings": bool(pred_multi[0][0][0] > 0.5),
-                "savings_confidence": float(pred_multi[0][0][0]),
-                "recommended_savings_amount": float(pred_multi[1][0][0]),
-                "financial_risk": bool(pred_multi[2][0][0] > 0.5),
-                "risk_score": float(pred_multi[2][0][0])
+                "can_achieve_savings": bool(predictions['multi_task'][0][0][0] > 0.5),
+                "savings_confidence": float(predictions['multi_task'][0][0][0]),
+                "recommended_savings_amount": float(predictions['multi_task'][1][0][0]),
+                "financial_risk": bool(predictions['multi_task'][2][0][0] > 0.5),
+                "risk_score": float(predictions['multi_task'][2][0][0])
             }
         }
+        
+        # Save data in background
+        save_user_data(data, result)
         
         return jsonify(result)
         
     except KeyError as e:
-        return jsonify({"error": f"Missing required field: {str(e)}"}), 400
+        return jsonify({"error": f"Missing field: {str(e)}"}), 400
     except (ValueError, TypeError) as e:
-        return jsonify({"error": f"Invalid data type: {str(e)}"}), 400
+        return jsonify({"error": f"Invalid data: {str(e)}"}), 400
     except Exception as e:
-        return jsonify({"error": f"Prediction error: {str(e)}"}), 500
+        return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
 
-@app.route('/health', methods=['GET'])
-def health_check():
-    return jsonify({"status": "healthy", "models_loaded": True})
+@app.route('/health')
+def health():
+    return jsonify({"status": "healthy", "models": len(models), "features": TOTAL_FEATURES})
+
+@app.route('/data', methods=['GET'])
+def get_user_data():
+    """Get saved user data"""
+    try:
+        if os.path.exists(USER_DATA_FILE):
+            with open(USER_DATA_FILE, 'r') as f:
+                data = json.load(f)
+                return jsonify({
+                    "total_predictions": len(data.get("predictions", [])),
+                    "predictions": data.get("predictions", [])
+                })
+        return jsonify({"total_predictions": 0, "predictions": []})
+    except Exception as e:
+        return jsonify({"error": f"Failed to load data: {str(e)}"}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)
