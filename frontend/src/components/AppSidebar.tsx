@@ -1,4 +1,3 @@
-
 import { Home, BarChart3, MessageCircle, User, TrendingUp, CreditCard, Target, FileBarChart } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { cn } from "@/services/utils"
@@ -40,7 +39,7 @@ export function AppSidebar() {
       "transition-colors",
       {
         "bg-primary text-primary-foreground hover:bg-primary/90 font-medium": isActive,
-        "text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground dark:text-sidebar-foreground": !isActive
+        "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground": !isActive
       }
     )
 
