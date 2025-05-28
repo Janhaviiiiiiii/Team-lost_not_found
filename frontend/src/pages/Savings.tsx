@@ -3,93 +3,128 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Target, TrendingUp, DollarSign, Calendar, AlertCircle, CheckCircle2, Clock } from "lucide-react"
+import { Target, TrendingUp, DollarSign, Calendar, AlertCircle, CheckCircle2, Clock, Loader2 } from "lucide-react"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
-
-const savingsGoals = [
-  {
-    id: 1,
-    name: 'Emergency Fund',
-    target: 180000,
-    current: 45000,
-    deadline: '2025-12-31',
-    priority: 'high',
-    status: 'in_progress',
-    monthlyContribution: 5000,
-    category: 'safety'
-  },
-  {
-    id: 2,
-    name: 'Investment Portfolio',
-    target: 102038,
-    current: 15000,
-    deadline: '2026-06-30',
-    priority: 'medium',
-    status: 'in_progress',
-    monthlyContribution: 3200,
-    category: 'growth'
-  },
-  {
-    id: 3,
-    name: 'Vacation Fund',
-    target: 25000,
-    current: 8500,
-    deadline: '2025-07-01',
-    priority: 'low',
-    status: 'in_progress',
-    monthlyContribution: 1000,
-    category: 'lifestyle'
-  },
-  {
-    id: 4,
-    name: 'Home Renovation',
-    target: 75000,
-    current: 12000,
-    deadline: '2026-12-31',
-    priority: 'medium',
-    status: 'planning',
-    monthlyContribution: 2500,
-    category: 'home'
-  }
-]
-
-const savingsProjection = [
-  { month: 'Jan', emergency: 40000, investment: 12000, vacation: 6500, home: 8000 },
-  { month: 'Feb', emergency: 45000, investment: 15200, vacation: 7500, home: 10500 },
-  { month: 'Mar', emergency: 50000, investment: 18400, vacation: 8500, home: 13000 },
-  { month: 'Apr', emergency: 55000, investment: 21600, vacation: 9500, home: 15500 },
-  { month: 'May', emergency: 60000, investment: 24800, vacation: 10500, home: 18000 },
-  { month: 'Jun', emergency: 65000, investment: 28000, vacation: 11500, home: 20500 },
-]
-
-const aiRecommendations = [
-  {
-    title: 'Accelerate Emergency Fund',
-    description: 'Based on your risk profile, prioritize building your emergency fund to 6 months of expenses.',
-    impact: 'High',
-    timeframe: '12 months',
-    action: 'Increase monthly contribution by ₹2,000'
-  },
-  {
-    title: 'Optimize Investment Strategy',
-    description: 'With your current savings rate, you can achieve better returns through diversified investments.',
-    impact: 'Medium',
-    timeframe: '6 months',
-    action: 'Allocate 60% to index funds, 40% to bonds'
-  },
-  {
-    title: 'Automate Savings',
-    description: 'Set up automatic transfers to improve consistency and reach goals faster.',
-    impact: 'Medium',
-    timeframe: '1 month',
-    action: 'Setup 3 automatic transfers for different goals'
-  }
-]
+import { useUserData } from "@/hooks/useUserData"
 
 const Savings = () => {
+  const { data: userData, isLoading: loading, error } = useUserData()
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6 animate-fade-in">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Loading savings data...</span>
+        </div>
+      </div>
+    )
+  }
+  if (error || !userData || !userData.predictions || userData.predictions.length === 0) {
+    return (
+      <div className="p-6 space-y-6 animate-fade-in">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-destructive">Failed to load savings data. Please try again.</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Get the latest prediction's input and output data
+  const latestPrediction = userData.predictions[userData.predictions.length - 1]
+  const userInput = latestPrediction.input
+  const userOutput = latestPrediction.output
+
+  // Calculate dynamic savings goals based on user data
+  const monthlySavingsAmount = (userInput.Income || 0) * (userInput.Savings_Rate || 0.10)
+  const emergencyFundTarget = (userInput.Income || 0) * 6 // 6 months of income
+  const currentSavings = userInput.Disposable_Income || 0
+
+  const savingsGoals = [
+    {
+      id: 1,
+      name: 'Emergency Fund',
+      target: emergencyFundTarget,
+      current: currentSavings * 0.5, // Assume 50% is in emergency fund
+      deadline: '2025-12-31',
+      priority: 'high',
+      status: 'in_progress',
+      monthlyContribution: monthlySavingsAmount * 0.4, // 40% of savings to emergency
+      category: 'safety'
+    },    {
+      id: 2,
+      name: 'Investment Portfolio',
+      target: (userInput.Income || 0) * 24, // 2 years of income as investment target
+      current: currentSavings * 0.3, // Assume 30% is in investments
+      deadline: '2026-06-30',
+      priority: 'medium',
+      status: 'in_progress',
+      monthlyContribution: monthlySavingsAmount * 0.35, // 35% to investments
+      category: 'growth'
+    },
+    {
+      id: 3,
+      name: 'Vacation Fund',
+      target: (userInput.Income || 0) * 0.5, // Half month income for vacation
+      current: currentSavings * 0.1, // Assume 10% for vacation
+      deadline: '2025-07-01',
+      priority: 'low',
+      status: 'in_progress',
+      monthlyContribution: monthlySavingsAmount * 0.15, // 15% to vacation
+      category: 'lifestyle'
+    },
+    {
+      id: 4,
+      name: 'Home Improvement',
+      target: (userInput.Income || 0) * 1.5, // 1.5 months income for home improvement
+      current: currentSavings * 0.1, // Assume 10% for home improvement
+      deadline: '2026-12-31',
+      priority: 'medium',
+      status: 'planning',
+      monthlyContribution: monthlySavingsAmount * 0.1, // 10% to home improvement
+      category: 'home'
+    }
+  ]
+
+  // Generate projection data based on current savings and monthly contributions
+  const savingsProjection = Array.from({ length: 6 }, (_, i) => {
+    const month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'][i]
+    return {
+      month,
+      emergency: Math.max(0, savingsGoals[0].current + (savingsGoals[0].monthlyContribution * (i + 1))),
+      investment: Math.max(0, savingsGoals[1].current + (savingsGoals[1].monthlyContribution * (i + 1))),
+      vacation: Math.max(0, savingsGoals[2].current + (savingsGoals[2].monthlyContribution * (i + 1))),
+      home: Math.max(0, savingsGoals[3].current + (savingsGoals[3].monthlyContribution * (i + 1))),
+    }
+  })
+  // AI recommendations based on user data
+  const aiRecommendations = [
+    {
+      title: 'Optimize Emergency Fund',
+      description: `Based on your income of ₹${userInput.Income?.toLocaleString()}, build an emergency fund of ₹${emergencyFundTarget.toLocaleString()}.`,
+      impact: 'High',
+      timeframe: '12 months',
+      action: `Increase monthly contribution by ₹${Math.max(0, (emergencyFundTarget - savingsGoals[0].current) / 12 - savingsGoals[0].monthlyContribution).toFixed(0)}`
+    },
+    {
+      title: 'Diversify Investment Strategy',
+      description: 'With your current savings rate, you can achieve better returns through diversified investments.',
+      impact: 'Medium',
+      timeframe: '6 months',
+      action: 'Allocate 60% to index funds, 40% to bonds'
+    },
+    {
+      title: 'Automate Savings',
+      description: `Set up automatic transfers for ₹${monthlySavingsAmount.toFixed(0)} monthly to improve consistency.`,
+      impact: 'Medium',
+      timeframe: '1 month',
+      action: 'Setup automatic transfers for different goals'
+    }
+  ]
+
   const totalSavingsTarget = savingsGoals.reduce((sum, goal) => sum + goal.target, 0)
   const totalCurrentSavings = savingsGoals.reduce((sum, goal) => sum + goal.current, 0)
-  const overallProgress = (totalCurrentSavings / totalSavingsTarget) * 100
+  const overallProgress = totalSavingsTarget > 0 ? (totalCurrentSavings / totalSavingsTarget) * 100 : 0
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -149,10 +184,9 @@ const Savings = () => {
             <CardTitle className="text-sm font-medium">Monthly Savings</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹11,700</div>
+          <CardContent>            <div className="text-2xl font-bold">₹{monthlySavingsAmount.toLocaleString()}</div>
             <p className="text-xs text-success">
-              26.2% of income saved
+              {userInput.Income > 0 ? ((monthlySavingsAmount / userInput.Income) * 100).toFixed(1) : 0}% of income saved
             </p>
           </CardContent>
         </Card>
@@ -175,8 +209,7 @@ const Savings = () => {
             <CardTitle className="text-sm font-medium">AI Confidence</CardTitle>
             <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success">99.9%</div>
+          <CardContent>            <div className="text-2xl font-bold text-success">{userOutput.savings_model.confidence ? (userOutput.savings_model.confidence * 100).toFixed(1) : '99.9'}%</div>
             <p className="text-xs text-success">
               Goals achievable
             </p>

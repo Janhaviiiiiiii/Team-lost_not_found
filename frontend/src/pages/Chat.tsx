@@ -8,6 +8,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Send, Bot, User, Lightbulb, TrendingUp, PiggyBank, Shield, Loader2 } from "lucide-react"
 import { chatAPI } from '@/services/api'
 import { useToast } from '@/hooks/use-toast'
+import { useUserData } from '@/hooks/useUserData'
 
 
 interface Message {
@@ -19,10 +20,11 @@ interface Message {
 }
 
 const Chat = () => {
+  const { data: userData, isLoading: userDataLoading } = useUserData()
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
-      content: "Hello! I'm your personal finance AI assistant. I can help you analyze your spending, optimize savings, assess financial risks, and provide personalized recommendations. What would you like to know about your finances?",
+      content: `Hello! I'm your personal finance AI assistant. I can help you analyze your spending, optimize savings, assess financial risks, and provide personalized recommendations.${userData ? ` I can see you have an income of ₹${userData.Income?.toLocaleString()} and a savings rate of ${((userData.Savings_Rate || 0) * 100).toFixed(1)}%. ` : ' '}What would you like to know about your finances?`,
       isBot: true,
       timestamp: new Date().toLocaleTimeString()
     }
@@ -54,7 +56,12 @@ const Chat = () => {
     setIsLoading(true)
 
     try {
-      const response = await chatAPI.sendMessage(inputValue)
+      // Include user context in the chat message
+      const messageWithContext = userData 
+        ? `User Context: Income: ₹${userData.Income}, Age: ${userData.Age}, Savings Rate: ${((userData.Savings_Rate || 0) * 100).toFixed(1)}%, Financial Stress: ${((userData.Financial_Stress_Score || 0) * 100).toFixed(1)}%, Occupation: ${userData.Occupation}. User Question: ${inputValue}`
+        : inputValue
+
+      const response = await chatAPI.sendMessage(messageWithContext)
       
       setMessages(prev => 
         prev.map(msg => 
@@ -89,6 +96,19 @@ const Chat = () => {
   const handleSuggestedQuestion = (question: string) => {
     setInputValue(question)
   }
+  // Suggested questions based on user data
+  const userInput = userData?.predictions?.[0]?.input
+  const suggestedQuestions = userInput ? [
+    `How can I reduce my financial stress score of ${((userInput.Financial_Stress_Score || 0) * 100).toFixed(1)}%?`,
+    `Is my savings rate of ${((userInput.Savings_Rate || 0) * 100).toFixed(1)}% good for someone my age?`,
+    `What investment strategy would you recommend for my income level?`,
+    `How can I optimize my expense categories?`
+  ] : [
+    "How can I improve my savings rate?",
+    "What's a good emergency fund amount?",
+    "How should I allocate my investments?",
+    "What are some ways to reduce expenses?"
+  ]
 
   return (
     <div className="p-6 max-w-4xl mx-auto animate-fade-in">
@@ -163,9 +183,33 @@ const Chat = () => {
                 <Send className="h-4 w-4" />
               )}
             </Button>
-          </div>
-        </div>
+          </div>        </div>
       </Card>
+
+      {/* Suggested Questions */}
+      {userData && !userDataLoading && (
+        <Card className="mt-4">
+          <CardHeader>
+            <CardTitle className="text-lg">Personalized Suggestions</CardTitle>
+            <CardDescription>Based on your financial profile</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {suggestedQuestions.map((question, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="h-auto p-3 text-left justify-start"
+                  onClick={() => handleSuggestedQuestion(question)}
+                >
+                  <Lightbulb className="h-4 w-4 mr-2 flex-shrink-0" />
+                  <span className="text-sm">{question}</span>
+                </Button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

@@ -3,105 +3,142 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Car, Home, Utensils, Gamepad2, Heart, GraduationCap, IndianRupeeIcon,MoreHorizontal } from "lucide-react"
-
-const expenseCategories = [
-  {
-    name: 'Rent',
-    amount: 13391.17,
-    percentage: 44.6,
-    icon: Home,
-    color: 'bg-blue-500',
-    isEssential: true,
-    trend: 'stable',
-    potentialSavings: 0
-  },
-  {
-    name: 'Groceries',
-    amount: 6658.77,
-    percentage: 22.2,
-    icon: ShoppingCart,
-    color: 'bg-green-500',
-    isEssential: true,
-    trend: 'up',
-    potentialSavings: 1685.70
-  },
-  {
-    name: 'Utilities',
-    amount: 2911.79,
-    percentage: 9.7,
-    icon: DollarSign,
-    color: 'bg-yellow-500',
-    isEssential: true,
-    trend: 'down',
-    potentialSavings: 678.29
-  },
-  {
-    name: 'Transport',
-    amount: 2636.97,
-    percentage: 8.8,
-    icon: Car,
-    color: 'bg-purple-500',
-    isEssential: false,
-    trend: 'up',
-    potentialSavings: 328.89
-  },
-  {
-    name: 'Insurance',
-    amount: 2206.49,
-    percentage: 7.4,
-    icon: Heart,
-    color: 'bg-red-500',
-    isEssential: true,
-    trend: 'stable',
-    potentialSavings: 0
-  },
-  {
-    name: 'Eating Out',
-    amount: 1651.80,
-    percentage: 5.5,
-    icon: Utensils,
-    color: 'bg-orange-500',
-    isEssential: false,
-    trend: 'up',
-    potentialSavings: 465.77
-  },
-  {
-    name: 'Healthcare',
-    amount: 1546.91,
-    percentage: 5.2,
-    icon: Heart,
-    color: 'bg-pink-500',
-    isEssential: true,
-    trend: 'stable',
-    potentialSavings: 67.68
-  },
-  {
-    name: 'Entertainment',
-    amount: 1536.18,
-    percentage: 5.1,
-    icon: Gamepad2,
-    color: 'bg-indigo-500',
-    isEssential: false,
-    trend: 'up',
-    potentialSavings: 195.15
-  },
-  {
-    name: 'Miscellaneous',
-    amount: 831.53,
-    percentage: 2.8,
-    icon: MoreHorizontal,
-    color: 'bg-gray-500',
-    isEssential: false,
-    trend: 'stable',
-    potentialSavings: 85.74
-  },
-]
-
-const totalExpenses = 30000
-const totalPotentialSavings = 3507.22
+import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Car, Home, Utensils, Gamepad2, Heart, GraduationCap, IndianRupeeIcon, MoreHorizontal, Loader2, Shield } from "lucide-react"
+import { useUserData } from "@/hooks/useUserData"
 
 const Expenses = () => {
+  const { data: userData, isLoading: loading, error } = useUserData()
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6 animate-fade-in">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Loading expense data...</span>
+        </div>
+      </div>
+    )
+  }
+  if (error || !userData || !userData.predictions || userData.predictions.length === 0) {
+    return (
+      <div className="p-6 space-y-6 animate-fade-in">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-destructive">Failed to load expense data. Please try again.</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Get the latest prediction's input data
+  const latestPrediction = userData.predictions[userData.predictions.length - 1]
+  const userInput = latestPrediction.input
+
+  // Convert user data to expense categories format
+  const expenseCategories = [
+    {
+      name: 'Rent',
+      amount: userInput.Rent || 0,
+      percentage: ((userInput.Rent || 0) / (userInput.Income || 1)) * 100,
+      icon: Home,
+      color: 'bg-blue-500',
+      isEssential: true,
+      trend: 'stable',
+      potentialSavings: 0
+    },
+    {
+      name: 'Groceries',
+      amount: userInput.Groceries || 0,
+      percentage: ((userInput.Groceries || 0) / (userInput.Income || 1)) * 100,
+      icon: ShoppingCart,
+      color: 'bg-green-500',
+      isEssential: true,
+      trend: 'up',
+      potentialSavings: userInput.Potential_Savings_Groceries || 0
+    },
+    {
+      name: 'Utilities',
+      amount: userInput.Utilities || 0,
+      percentage: ((userInput.Utilities || 0) / (userInput.Income || 1)) * 100,
+      icon: DollarSign,
+      color: 'bg-yellow-500',
+      isEssential: true,
+      trend: 'down',
+      potentialSavings: userInput.Potential_Savings_Utilities || 0
+    },
+    {
+      name: 'Transport',
+      amount: userInput.Transport || 0,
+      percentage: ((userInput.Transport || 0) / (userInput.Income || 1)) * 100,
+      icon: Car,
+      color: 'bg-purple-500',
+      isEssential: false,
+      trend: 'up',
+      potentialSavings: userInput.Potential_Savings_Transport || 0
+    },
+    {
+      name: 'Healthcare',
+      amount: userInput.Healthcare || 0,
+      percentage: ((userInput.Healthcare || 0) / (userInput.Income || 1)) * 100,
+      icon: Heart,
+      color: 'bg-pink-500',
+      isEssential: true,
+      trend: 'stable',
+      potentialSavings: userInput.Potential_Savings_Healthcare || 0
+    },
+    {
+      name: 'Entertainment',
+      amount: userInput.Entertainment || 0,
+      percentage: ((userInput.Entertainment || 0) / (userInput.Income || 1)) * 100,
+      icon: Gamepad2,
+      color: 'bg-indigo-500',
+      isEssential: false,
+      trend: 'up',
+      potentialSavings: userInput.Potential_Savings_Entertainment || 0
+    },
+    {
+      name: 'Eating Out',
+      amount: userInput.Eating_Out || 0,
+      percentage: ((userInput.Eating_Out || 0) / (userInput.Income || 1)) * 100,
+      icon: Utensils,
+      color: 'bg-orange-500',
+      isEssential: false,
+      trend: 'up',
+      potentialSavings: userInput.Potential_Savings_Eating_Out || 0
+    },
+    {
+      name: 'Education',
+      amount: userInput.Education || 0,
+      percentage: ((userInput.Education || 0) / (userInput.Income || 1)) * 100,
+      icon: GraduationCap,
+      color: 'bg-indigo-500',
+      isEssential: true,
+      trend: 'stable',
+      potentialSavings: userInput.Potential_Savings_Education || 0
+    },
+    {
+      name: 'Miscellaneous',
+      amount: userInput.Miscellaneous || 0,
+      percentage: ((userInput.Miscellaneous || 0) / (userInput.Income || 1)) * 100,
+      icon: MoreHorizontal,
+      color: 'bg-gray-500',
+      isEssential: false,
+      trend: 'stable',
+      potentialSavings: userInput.Potential_Savings_Miscellaneous || 0
+    },
+    {
+      name: 'Insurance',
+      amount: userInput.Insurance || 0,
+      percentage: ((userInput.Insurance || 0) / (userInput.Income || 1)) * 100,
+      icon: Shield,
+      color: 'bg-red-500',
+      isEssential: true,
+      trend: 'stable',
+      potentialSavings: 0
+    },
+  ].filter(category => category.amount > 0) // Only show categories with expenses
+
+  const totalExpenses = expenseCategories.reduce((sum, cat) => sum + cat.amount, 0)
+  const totalPotentialSavings = expenseCategories.reduce((sum, cat) => sum + cat.potentialSavings, 0)
   const essentialExpenses = expenseCategories.filter(cat => cat.isEssential).reduce((sum, cat) => sum + cat.amount, 0)
   const nonEssentialExpenses = expenseCategories.filter(cat => !cat.isEssential).reduce((sum, cat) => sum + cat.amount, 0)
 
@@ -121,10 +158,9 @@ const Expenses = () => {
             <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
             <IndianRupeeIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹{totalExpenses.toLocaleString()}</div>
+          <CardContent>            <div className="text-2xl font-bold">₹{totalExpenses.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              67.2% of total income
+              {((totalExpenses / (userInput.Income || 1)) * 100).toFixed(1)}% of total income
             </p>
           </CardContent>
         </Card>
@@ -134,10 +170,9 @@ const Expenses = () => {
             <CardTitle className="text-sm font-medium">Essential Expenses</CardTitle>
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹{essentialExpenses.toLocaleString()}</div>
+          <CardContent>            <div className="text-2xl font-bold">₹{essentialExpenses.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              73.3% of total expenses
+              {totalExpenses > 0 ? ((essentialExpenses / totalExpenses) * 100).toFixed(1) : 0}% of total expenses
             </p>
           </CardContent>
         </Card>
@@ -147,10 +182,9 @@ const Expenses = () => {
             <CardTitle className="text-sm font-medium">Non-Essential</CardTitle>
             <Gamepad2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">₹{nonEssentialExpenses.toLocaleString()}</div>
+          <CardContent>            <div className="text-2xl font-bold">₹{nonEssentialExpenses.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
-              26.7% of total expenses
+              {totalExpenses > 0 ? ((nonEssentialExpenses / totalExpenses) * 100).toFixed(1) : 0}% of total expenses
             </p>
           </CardContent>
         </Card>
@@ -160,10 +194,9 @@ const Expenses = () => {
             <CardTitle className="text-sm font-medium">Savings Potential</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-success">₹{totalPotentialSavings.toLocaleString()}</div>
+          <CardContent>            <div className="text-2xl font-bold text-success">₹{totalPotentialSavings.toLocaleString()}</div>
             <p className="text-xs text-success">
-              11.7% optimization possible
+              {totalExpenses > 0 ? ((totalPotentialSavings / totalExpenses) * 100).toFixed(1) : 0}% optimization possible
             </p>
           </CardContent>
         </Card>
