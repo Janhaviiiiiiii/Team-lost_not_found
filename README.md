@@ -1,10 +1,19 @@
 # FinBro.ai - AI-Powered Personal Finance Assistant
 
-<p align="center">
-  <img src="images/1-dashboard.png" alt="Dashboard" width="800"/>
-</p>
+## Team Lost_Not_Found
 
-FinBro.ai is an intelligent personal finance application that combines advanced machine learning models with a Gemini-powered chatbot to provide comprehensive financial insights and personalized advice.
+-   **Team Leader**: Janhavi Chavan
+-   **Members**:
+    -   Anchal Tandekar
+    -   Rejwanul Hoque
+
+## Project Overview
+
+FinBro.ai is an advanced financial management platform that leverages cutting-edge machine learning models and Google's Gemini AI to provide personalized financial guidance. By analyzing over 26 financial parameters, including income, expenses, and spending patterns, our system offers accurate savings predictions, risk assessments, and tailored financial advice through an intuitive chat interface.
+
+<p align="center">
+  <img src="images/1-white-dashboard.png" alt="Dashboard Light Theme" width="800"/>
+</p>
 
 ## 🌟 Key Features
 
@@ -16,7 +25,7 @@ FinBro.ai is an intelligent personal finance application that combines advanced 
 -   **Confidence Scoring**: Precise confidence metrics for all predictions
 
 <p align="center">
-  <img src="images/2-analytics.png" alt="Analytics" width="800"/>
+  <img src="images/2-analytics.png" alt="Analytics Dark Theme" width="800"/>
 </p>
 
 ### 2. Gemini-Powered AI Assistant
@@ -27,7 +36,7 @@ FinBro.ai is an intelligent personal finance application that combines advanced 
 -   **Data-Backed Suggestions**: Recommendations based on your financial profile
 
 <p align="center">
-  <img src="images/3-expense.png" alt="Expenses" width="800"/>
+  <img src="images/3-white-expense.png" alt="Expenses Light Theme" width="800"/>
 </p>
 
 ### 3. Smart Savings Tracker
@@ -37,7 +46,7 @@ FinBro.ai is an intelligent personal finance application that combines advanced 
 -   **AI-Powered Recommendations**: Personalized tips to optimize savings
 
 <p align="center">
-  <img src="images/4-savings.png" alt="Savings Goals" width="800"/>
+  <img src="images/4-savings.png" alt="Savings Goals Dark Theme" width="800"/>
 </p>
 
 ### 4. Interactive Chat Interface
@@ -47,7 +56,7 @@ FinBro.ai is an intelligent personal finance application that combines advanced 
 -   **Actionable Insights**: Practical advice you can implement immediately
 
 <p align="center">
-  <img src="images/5-chatbot.png" alt="AI Assistant" width="800"/>
+  <img src="images/5-chatbot.png" alt="AI Assistant Light Theme" width="800"/>
 </p>
 
 ### 5. Financial Report Generator
@@ -57,7 +66,18 @@ FinBro.ai is an intelligent personal finance application that combines advanced 
 -   **Future Projections**: AI-powered financial forecasting
 
 <p align="center">
-  <img src="images/6-financialReport.png" alt="Financial Report" width="800"/>
+  <img src="images/6-white-Report.png" alt="Financial Report Light Theme" width="800"/>
+</p>
+
+### 6. AI-Powered Results Dashboard
+
+-   **Prediction Results**: Visual representation of ML model predictions
+-   **Confidence Metrics**: Clear display of prediction confidence levels
+-   **Risk Assessment Scores**: Comprehensive financial risk analysis
+-   **Savings Recommendations**: Personalized savings amount suggestions
+
+<p align="center">
+  <img src="images/7-white-Result.png" alt="Results Dashboard Dark Theme" width="800"/>
 </p>
 
 ## 🛠️ Technology Stack

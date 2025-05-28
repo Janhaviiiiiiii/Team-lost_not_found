@@ -83,7 +83,7 @@ export function AppSidebar() {
       <SidebarContent className={theme === 'light' ? 'bg-white' : 'bg-sidebar'}>
         <div className="p-4 border-b" style={{ borderColor: theme === 'light' ? '#e5e7eb' : undefined }}>
           <h2 className={`font-bold text-xl ${theme === 'light' ? 'text-slate-800' : 'text-sidebar-foreground'} ${isCollapsed ? 'hidden' : 'block'}`}>
-            FinPal
+            FinBro.ai
           </h2>
           {isCollapsed && (
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">

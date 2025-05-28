@@ -1,11 +1,11 @@
 {
   "predictions": [
     {
-      "timestamp": "2025-05-28T15:53:31.733293",
+      "timestamp": "2025-05-28T21:46:05.141058",
       "input": {
         "Income": 54637.25,
         "Age": 49,
-        "Dependents": 2,
+        "Dependents": 0,
         "Occupation": "Self_Employed",
         "City_Tier": "Tier_2",
         "Rent": 13391.17,
@@ -61,14 +61,14 @@
           "confidence": 0.9999999403953552
         },
         "amount_model": {
-          "recommended_savings": 105629.328125
+          "recommended_savings": 105629.421875
         },
         "multi_task_model": {
           "can_achieve_savings": true,
           "savings_confidence": 0.9999693632125854,
-          "recommended_savings_amount": 109241.5234375,
+          "recommended_savings_amount": 109241.1328125,
           "financial_risk": true,
-          "risk_score": 0.9817662835121155
+          "risk_score": 0.9817683100700378
         }
       }
     }
