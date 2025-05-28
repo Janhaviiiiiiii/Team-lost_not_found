@@ -1,28 +1,81 @@
-# FinTech Personal Finance Prototype
+# FinBro.ai - AI-Powered Personal Finance Assistant
 
-This project is a prototype for a personal finance application that leverages machine learning to help users optimize their savings and manage their finances. The current version includes a trained ML model and a Flask backend API for local testing and development.
+<p align="center">
+  <img src="images/1-dashboard.png" alt="Dashboard" width="800"/>
+</p>
 
----
+FinBro.ai is an intelligent personal finance application that combines advanced machine learning models with a Gemini-powered chatbot to provide comprehensive financial insights and personalized advice.
 
-## Features
+## 🌟 Key Features
 
--   **ML-powered predictions**:
-    -   Can you achieve your savings goal?
-    -   How much should you save?
-    -   What is your financial risk profile?
--   **REST API**: Easily integrate with a frontend or test with tools like Postman or curl.
--   **Extensible**: Designed for future integration with a full-stack app.
+### 1. AI Financial Analysis Models
 
----
+-   **Savings Achievement Prediction**: Advanced ML model analyzing 26+ parameters to predict savings goal attainment
+-   **Optimal Savings Calculator**: Data-driven recommendations for monthly savings targets
+-   **Risk Assessment**: Sophisticated financial risk profiling using multi-task learning
+-   **Confidence Scoring**: Precise confidence metrics for all predictions
 
-## Project Structure
+<p align="center">
+  <img src="images/2-analytics.png" alt="Analytics" width="800"/>
+</p>
+
+### 2. Gemini-Powered AI Assistant
+
+-   **Personalized Financial Advisor**: Processes 26+ financial parameters
+-   **Smart Insights**: Real-time, context-aware financial advice
+-   **Natural Interaction**: Conversational interface with 100-word digestible responses
+-   **Data-Backed Suggestions**: Recommendations based on your financial profile
+
+<p align="center">
+  <img src="images/3-expense.png" alt="Expenses" width="800"/>
+</p>
+
+### 3. Smart Savings Tracker
+
+-   **Goal Setting & Monitoring**: Visual tracking of savings objectives
+-   **Progress Analytics**: Detailed breakdowns of saving patterns
+-   **AI-Powered Recommendations**: Personalized tips to optimize savings
+
+<p align="center">
+  <img src="images/4-savings.png" alt="Savings Goals" width="800"/>
+</p>
+
+### 4. Interactive Chat Interface
+
+-   **Real-time Assistance**: Instant responses to financial queries
+-   **Contextual Understanding**: AI that remembers your financial context
+-   **Actionable Insights**: Practical advice you can implement immediately
+
+<p align="center">
+  <img src="images/5-chatbot.png" alt="AI Assistant" width="800"/>
+</p>
+
+### 5. Financial Report Generator
+
+-   **Comprehensive Analysis**: Detailed breakdown of your financial health
+-   **Risk Assessment**: Visual representation of financial risks
+-   **Future Projections**: AI-powered financial forecasting
+
+<p align="center">
+  <img src="images/6-financialReport.png" alt="Financial Report" width="800"/>
+</p>
+
+## 🛠️ Technology Stack
+
+-   **Backend**: Flask, TensorFlow, Gemini AI
+-   **Frontend**: React, TypeScript, Tailwind CSS
+-   **ML Models**: Attention-based Neural Networks
+-   **API**: RESTful architecture
+
+## 📂 Project Structure
 
 ```
 Team-lost_not_found/
 │
 ├── backend/
 │   ├── app.py           # Flask API server
-│   └── readme.md
+│   ├── chatBot.py       # Gemini chatbot integration
+│   └── readme.md        # API documentation
 │
 ├── model/
 │   ├── feature_info.json
@@ -32,119 +85,109 @@ Team-lost_not_found/
 │   │   └── best_multi_task_model.keras
 │   └── ... (notebooks, scripts)
 │
-├── data/
-│   ├── data.csv
-│   └── processed_financial_data.csv
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── services/
+│   └── package.json
 │
-└── frontend/
-    └── main.js          # (placeholder for future frontend)
+└── data/
+    └── processed_financial_data.csv
 ```
 
----
+## 🚀 Getting Started
 
-## Getting Started
-
-### 1. Prerequisites
+### Prerequisites
 
 -   Python 3.8+
--   pip
--   [TensorFlow](https://www.tensorflow.org/install)
--   Flask
+-   Node.js & npm/pnpm
+-   Gemini API key
 
-Install dependencies:
+### Installation
 
-```bash
-pip install flask tensorflow numpy
-```
-
-### 2. Run the Backend API
-
-From the `backend` directory:
+1. **Clone the repository**
 
 ```bash
-python app.py
+git clone https://github.com/Janhaviiiiiiii/Team-lost_not_found.git
+cd Team-lost_not_found
 ```
 
-The API will be available at [http://localhost:5000](http://localhost:5000).
-
-### 3. Test the API
-
-Send a POST request to `/predict` with a JSON payload.  
-Example using `curl`:
+2. **Set up frontend**
 
 ```bash
-curl -X POST http://localhost:5000/predict \
-  -H "Content-Type: application/json" \
-  -d @test.json
+cd frontend
+pnpm install  # or npm install
+cd ..
 ```
 
-Where `test.json` contains:
+3. **Install Python dependencies**
 
-```json
+```bash
+pip install -r requirements.txt
+```
+
+4. **Configure environment**
+   Create a `.env` file in the backend directory:
+
+```env
+GEMINI_API_KEY=your_api_key_here
+```
+
+5. **Run the application**
+
+```bash
+python run.py
+```
+
+The application will be available at `http://localhost:5000`
+
+## 🔄 API Endpoints
+
+### 1. Predictions API
+
+```bash
+POST /predict
+Content-Type: application/json
+
 {
-    "Income": 44637.25,
-    "Age": 49,
-    "Dependents": 0,
-    "Occupation": "Self_Employed",
-    "City_Tier": "Tier_1",
-    "Rent": 13391.17,
-    "Loan_Repayment": 0.0,
-    "Insurance": 2206.49,
-    "Groceries": 6658.77,
-    "Transport": 2636.97,
-    "Eating_Out": 1651.8,
-    "Entertainment": 1536.18,
-    "Utilities": 2911.79,
-    "Healthcare": 1546.91,
-    "Education": 0.0,
-    "Miscellaneous": 831.53,
-    "Desired_Savings_Percentage": 13.89,
-    "Disposable_Income": 11265.63,
-    "Potential_Savings_Groceries": 1685.7,
-    "Potential_Savings_Transport": 328.89,
-    "Potential_Savings_Eating_Out": 465.77,
-    "Potential_Savings_Entertainment": 195.15,
-    "Potential_Savings_Utilities": 678.29,
-    "Potential_Savings_Healthcare": 67.68,
-    "Potential_Savings_Education": 0.0,
-    "Potential_Savings_Miscellaneous": 85.74
+  "Income": 44637.25,
+  "Age": 49,
+  "Dependents": 0,
+  ...
 }
 ```
 
-### 4. API Endpoints
+### 2. Chat API
 
--   `GET /`  
-    Health check and feature count.
+```bash
+POST /chat
+Content-Type: application/json
 
--   `POST /predict`  
-    Returns savings prediction, recommended savings amount, and financial risk.
+{
+  "message": "How can I improve my savings?"
+}
+```
 
--   `GET /health`  
-    Returns API and model status.
+## 👥 Team Lost Not Found
 
----
+-   **Team Leader**: Janhavi Chavan
+-   **Members**:
+    -   Anchal Tandekar
+    -   Rejwanul Hoque
 
-## Next Steps
+## 📋 Future Roadmap
 
--   Build a frontend to interact with the API.
--   Expand ML features and improve model accuracy.
--   Prepare for deployment (Docker, cloud, etc.).
+-   Advanced portfolio management features
+-   Integration with financial institutions
+-   Mobile application development
+-   Enhanced ML model accuracy
+-   Real-time financial alerts
 
----
+## 📝 License
 
-## License
+This project is intended for educational and prototype purposes only.
 
-This project is for educational and prototyping purposes.
+## 🤝 Contributing
 
----
-
-## Authors
-
--   Team Lost Not Found
-
----
-
-## Notes
-
--   Ensure `model/feature_info.json` and all `.keras` model files are present.
--   The API expects all features as described in `feature_info.json`.
+We welcome contributions! Please feel free to submit a Pull Request.
