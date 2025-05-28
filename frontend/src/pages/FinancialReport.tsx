@@ -521,7 +521,7 @@ const FinancialReport = () => {
                 name="income"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base font-medium">Monthly Income ($)</FormLabel>
+                    <FormLabel className="text-base font-medium">Monthly Income (₹)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -571,10 +571,10 @@ const FinancialReport = () => {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {[
-                { name: 'rent', label: 'Rent/Mortgage ($)' },
-                { name: 'utilities', label: 'Utilities ($)' },
-                { name: 'insurance', label: 'Insurance ($)' },
-                { name: 'loanRepayment', label: 'Loan Repayment ($)' }
+                { name: 'rent', label: 'Rent/Mortgage (₹)' },
+                { name: 'utilities', label: 'Utilities (₹)' },
+                { name: 'insurance', label: 'Insurance (₹)' },
+                { name: 'loanRepayment', label: 'Loan Repayment (₹)' }
               ].map((field) => (
                 <FormField
                   key={field.name}
@@ -612,13 +612,13 @@ const FinancialReport = () => {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
-                { name: 'groceries', label: 'Groceries ($)' },
-                { name: 'transport', label: 'Transport ($)' },
-                { name: 'eatingOut', label: 'Eating Out ($)' },
-                { name: 'entertainment', label: 'Entertainment ($)' },
-                { name: 'healthcare', label: 'Healthcare ($)' },
-                { name: 'education', label: 'Education ($)' },
-                { name: 'miscellaneous', label: 'Miscellaneous ($)' }
+                { name: 'groceries', label: 'Groceries (₹)' },
+                { name: 'transport', label: 'Transport (₹)' },
+                { name: 'eatingOut', label: 'Eating Out (₹)' },
+                { name: 'entertainment', label: 'Entertainment (₹)' },
+                { name: 'healthcare', label: 'Healthcare (₹)' },
+                { name: 'education', label: 'Education (₹)' },
+                { name: 'miscellaneous', label: 'Miscellaneous (₹)' }
               ].map((field) => (
                 <FormField
                   key={field.name}

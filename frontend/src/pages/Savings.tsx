@@ -68,7 +68,7 @@ const aiRecommendations = [
     description: 'Based on your risk profile, prioritize building your emergency fund to 6 months of expenses.',
     impact: 'High',
     timeframe: '12 months',
-    action: 'Increase monthly contribution by $2,000'
+    action: 'Increase monthly contribution by ₹2,000'
   },
   {
     title: 'Optimize Investment Strategy',
@@ -137,7 +137,7 @@ const Savings = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalCurrentSavings.toLocaleString()}</div>
+            <div className="text-2xl font-bold">₹{totalCurrentSavings.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
               {overallProgress.toFixed(1)}% of total goals
             </p>
@@ -150,7 +150,7 @@ const Savings = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$11,700</div>
+            <div className="text-2xl font-bold">₹11,700</div>
             <p className="text-xs text-success">
               26.2% of income saved
             </p>
@@ -217,10 +217,10 @@ const Savings = () => {
                     </div>
                     <div className="text-right">
                       <div className="font-semibold">
-                        ${goal.current.toLocaleString()} / ${goal.target.toLocaleString()}
+                        ₹{goal.current.toLocaleString()} / ₹{goal.target.toLocaleString()}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        {monthsToGoal > 0 ? `${monthsToGoal} months left` : 'Goal achieved!'}
+                        {monthsToGoal > 0 ? `₹${monthsToGoal} months left` : 'Goal achieved!'}
                       </div>
                     </div>
                   </div>
@@ -229,7 +229,7 @@ const Savings = () => {
                   
                   <div className="flex justify-between text-xs text-muted-foreground">
                     <span>{progressPercentage.toFixed(1)}% complete</span>
-                    <span>${goal.monthlyContribution.toLocaleString()}/month</span>
+                    <span>₹{goal.monthlyContribution.toLocaleString()}/month</span>
                   </div>
                 </div>
               )
@@ -260,7 +260,7 @@ const Savings = () => {
                     border: '1px solid #374151',
                     borderRadius: '8px'
                   }}
-                  formatter={(value) => [`$${Number(value).toLocaleString()}`, '']}
+                  formatter={(value) => [`₹${Number(value).toLocaleString()}`, '']}
                 />
                 <Line type="monotone" dataKey="emergency" stroke="#EF4444" strokeWidth={2} />
                 <Line type="monotone" dataKey="investment" stroke="#10B981" strokeWidth={2} />

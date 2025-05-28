@@ -199,7 +199,7 @@ const FinancialProfile = () => {
                 name="income"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Monthly Income ($)</FormLabel>
+                    <FormLabel>Monthly Income (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -250,7 +250,7 @@ const FinancialProfile = () => {
                 name="rent"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Rent/Mortgage ($)</FormLabel>
+                    <FormLabel>Rent/Mortgage (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -268,7 +268,7 @@ const FinancialProfile = () => {
                 name="utilities"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Utilities ($)</FormLabel>
+                    <FormLabel>Utilities (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -286,7 +286,7 @@ const FinancialProfile = () => {
                 name="insurance"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Insurance ($)</FormLabel>
+                    <FormLabel>Insurance (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -304,7 +304,7 @@ const FinancialProfile = () => {
                 name="loanRepayment"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Loan Repayment ($)</FormLabel>
+                    <FormLabel>Loan Repayment (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -334,7 +334,7 @@ const FinancialProfile = () => {
                 name="groceries"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Groceries ($)</FormLabel>
+                    <FormLabel>Groceries (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -352,7 +352,7 @@ const FinancialProfile = () => {
                 name="transport"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Transport ($)</FormLabel>
+                    <FormLabel>Transport (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -370,7 +370,7 @@ const FinancialProfile = () => {
                 name="eatingOut"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Eating Out ($)</FormLabel>
+                    <FormLabel>Eating Out (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -388,7 +388,7 @@ const FinancialProfile = () => {
                 name="entertainment"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Entertainment ($)</FormLabel>
+                    <FormLabel>Entertainment (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -406,7 +406,7 @@ const FinancialProfile = () => {
                 name="healthcare"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Healthcare ($)</FormLabel>
+                    <FormLabel>Healthcare (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -424,7 +424,7 @@ const FinancialProfile = () => {
                 name="education"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Education ($)</FormLabel>
+                    <FormLabel>Education (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 
@@ -442,7 +442,7 @@ const FinancialProfile = () => {
                 name="miscellaneous"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Miscellaneous ($)</FormLabel>
+                    <FormLabel>Miscellaneous (₹)</FormLabel>
                     <FormControl>
                       <Input 
                         type="number" 

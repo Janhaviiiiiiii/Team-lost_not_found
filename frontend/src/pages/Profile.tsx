@@ -148,7 +148,7 @@ const Profile = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="income">Monthly Income ($)</Label>
+                <Label htmlFor="income">Monthly Income (₹)</Label>
                 <Input
                   id="income"
                   type="number"
