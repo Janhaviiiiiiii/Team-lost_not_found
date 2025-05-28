@@ -52,7 +52,7 @@ export function AppSidebar() {
       <SidebarContent className="bg-sidebar">
         <div className="p-4 border-b border-sidebar-border">
           <h2 className={`font-bold text-xl text-sidebar-foreground ${isCollapsed ? 'hidden' : 'block'}`}>
-            FinPal
+            FinBro.ai
           </h2>
           {isCollapsed && (
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">

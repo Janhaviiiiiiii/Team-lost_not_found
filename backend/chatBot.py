@@ -120,7 +120,11 @@ Financial Risk: {'⚠️ Yes' if multi_task_model_output.get('financial_risk') e
 Now the user is asking:
 "{user_message}"
 
-Always keep your replies within 100 words and Give a helpful, friendly, and personalized answer based on their data and predictions.
+Instructions:
+- For greetings/casual talk: Respond naturally and friendly
+- For finance questions: Use their data to give personalized advice
+- For general questions: Answer normally without forcing financial data
+- Keep all responses under 100 words and conversational
 """
 
         # Generate content using the client (simplified approach)
