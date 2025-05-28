@@ -56,7 +56,7 @@ FinBro.ai is an advanced financial management platform that leverages cutting-ed
 -   **Actionable Insights**: Practical advice you can implement immediately
 
 <p align="center">
-  <img src="images/5-white-chatbot.png" alt="AI Assistant Light Theme" width="800"/>
+  <img src="images/5-chatbot.png" alt="AI Assistant Light Theme" width="800"/>
 </p>
 
 ### 5. Financial Report Generator
@@ -77,7 +77,7 @@ FinBro.ai is an advanced financial management platform that leverages cutting-ed
 -   **Savings Recommendations**: Personalized savings amount suggestions
 
 <p align="center">
-  <img src="images/7-Result.png" alt="Results Dashboard Dark Theme" width="800"/>
+  <img src="images/7-white-Result.png" alt="Results Dashboard Dark Theme" width="800"/>
 </p>
 
 ## 🛠️ Technology Stack
