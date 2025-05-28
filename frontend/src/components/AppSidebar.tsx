@@ -1,7 +1,7 @@
 
 import { Home, BarChart3, MessageCircle, User, TrendingUp, CreditCard, Target, FileBarChart } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
-import { cn } from "@/lib/utils"
+import { cn } from "@/services/utils"
 
 
 import {
