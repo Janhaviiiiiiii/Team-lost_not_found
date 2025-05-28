@@ -69,6 +69,17 @@ FinBro.ai is an advanced financial management platform that leverages cutting-ed
   <img src="images/6-white-Report.png" alt="Financial Report Light Theme" width="800"/>
 </p>
 
+### 6. AI-Powered Results Dashboard
+
+-   **Prediction Results**: Visual representation of ML model predictions
+-   **Confidence Metrics**: Clear display of prediction confidence levels
+-   **Risk Assessment Scores**: Comprehensive financial risk analysis
+-   **Savings Recommendations**: Personalized savings amount suggestions
+
+<p align="center">
+  <img src="images/7-Result.png" alt="Results Dashboard Dark Theme" width="800"/>
+</p>
+
 ## 🛠️ Technology Stack
 
 -   **Backend**: Flask, TensorFlow, Gemini AI
