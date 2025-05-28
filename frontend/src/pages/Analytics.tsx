@@ -1,41 +1,133 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Area, AreaChart, RadialBarChart, RadialBar, Legend } from 'recharts'
-import { TrendingUp, TrendingDown, DollarSign, Target } from "lucide-react"
+import { TrendingUp, TrendingDown, DollarSign, Target, Loader2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-
-const potentialSavingsData = [
-  { category: 'Groceries', current: 6658.77, potential: 1685.70, savings: 25.3 },
-  { category: 'Utilities', current: 2911.79, potential: 678.29, savings: 23.3 },
-  { category: 'Eating Out', current: 1651.80, potential: 465.77, savings: 28.2 },
-  { category: 'Transport', current: 2636.97, potential: 328.89, savings: 12.5 },
-  { category: 'Entertainment', current: 1536.18, potential: 195.15, savings: 12.7 },
-  { category: 'Healthcare', current: 1546.91, potential: 67.68, savings: 4.4 },
-  { category: 'Miscellaneous', current: 831.53, potential: 85.74, savings: 10.3 },
-]
-
-const expenseEfficiencyData = [
-  { name: 'Current Efficiency', value: 28, fill: '#10B981' },
-  { name: 'Potential Improvement', value: 72, fill: '#E5E7EB' },
-]
-
-const financialHealthData = [
-  { metric: 'Savings Rate', current: 13.89, target: 20, status: 'below' },
-  { metric: 'Emergency Fund', current: 7.1, target: 100, status: 'critical' },
-  { metric: 'Debt Ratio', current: 0, target: 0, status: 'good' },
-  { metric: 'Investment Rate', current: 0, target: 15, status: 'none' },
-]
-
-const monthlyTrendData = [
-  { month: 'Jan', income: 44637, expenses: 30000, savings: 3200 },
-  { month: 'Feb', income: 45200, expenses: 29800, savings: 3400 },
-  { month: 'Mar', income: 43900, expenses: 30200, savings: 2900 },
-  { month: 'Apr', income: 46100, expenses: 29500, savings: 3600 },
-  { month: 'May', income: 44637, expenses: 30000, savings: 3200 },
-  { month: 'Jun', income: 45800, expenses: 29300, savings: 3700 },
-]
+import { useUserData } from '@/hooks/useUserData'
 
 const Analytics = () => {
+  const { data: userData, isLoading, error } = useUserData()
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Loading analytics data...</span>
+      </div>
+    )
+  }
+
+  if (error || !userData?.predictions?.[0]) {
+    return (
+      <div className="p-6 space-y-6 animate-fade-in">
+        <div className="flex flex-col space-y-2">
+          <h1 className="text-3xl font-bold">Financial Analytics</h1>
+          <p className="text-muted-foreground">
+            Unable to load analytics data. Please check your connection.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const prediction = userData.predictions[0]
+  const input = prediction.input
+  const output = prediction.output
+
+  // Calculate potential savings data from the API response
+  const potentialSavingsData = [
+    { 
+      category: 'Groceries', 
+      current: input.Groceries, 
+      potential: input.Potential_Savings_Groceries, 
+      savings: ((input.Potential_Savings_Groceries / input.Groceries) * 100).toFixed(1)
+    },
+    { 
+      category: 'Utilities', 
+      current: input.Utilities, 
+      potential: input.Potential_Savings_Utilities, 
+      savings: ((input.Potential_Savings_Utilities / input.Utilities) * 100).toFixed(1)
+    },
+    { 
+      category: 'Eating Out', 
+      current: input.Eating_Out, 
+      potential: input.Potential_Savings_Eating_Out, 
+      savings: ((input.Potential_Savings_Eating_Out / input.Eating_Out) * 100).toFixed(1)
+    },
+    { 
+      category: 'Transport', 
+      current: input.Transport, 
+      potential: input.Potential_Savings_Transport, 
+      savings: ((input.Potential_Savings_Transport / input.Transport) * 100).toFixed(1)
+    },
+    { 
+      category: 'Entertainment', 
+      current: input.Entertainment, 
+      potential: input.Potential_Savings_Entertainment, 
+      savings: ((input.Potential_Savings_Entertainment / input.Entertainment) * 100).toFixed(1)
+    },
+    { 
+      category: 'Healthcare', 
+      current: input.Healthcare, 
+      potential: input.Potential_Savings_Healthcare, 
+      savings: ((input.Potential_Savings_Healthcare / input.Healthcare) * 100).toFixed(1)
+    },
+    { 
+      category: 'Miscellaneous', 
+      current: input.Miscellaneous, 
+      potential: input.Potential_Savings_Miscellaneous, 
+      savings: ((input.Potential_Savings_Miscellaneous / input.Miscellaneous) * 100).toFixed(1)
+    },
+  ]
+
+  const expenseEfficiencyData = [
+    { name: 'Current Efficiency', value: input.Expense_Efficiency * 100, fill: '#10B981' },
+    { name: 'Potential Improvement', value: (1 - input.Expense_Efficiency) * 100, fill: '#E5E7EB' },
+  ]
+
+  const financialHealthData = [
+    { 
+      metric: 'Savings Rate', 
+      current: (input.Savings_Rate * 100).toFixed(1), 
+      target: 20, 
+      status: input.Savings_Rate >= 0.2 ? 'good' : 'below' 
+    },
+    { 
+      metric: 'Emergency Fund', 
+      current: ((input.Actual_Savings_Potential / input.Essential_Expenses) * 100).toFixed(1), 
+      target: 100, 
+      status: (input.Actual_Savings_Potential / input.Essential_Expenses) >= 1 ? 'good' : 'critical' 
+    },
+    { 
+      metric: 'Debt Ratio', 
+      current: (input.Debt_to_Income_Ratio * 100).toFixed(1), 
+      target: 0, 
+      status: input.Debt_to_Income_Ratio === 0 ? 'good' : 'below' 
+    },
+    { 
+      metric: 'Investment Rate', 
+      current: 0, 
+      target: 15, 
+      status: 'none' 
+    },
+  ]
+
+  // Generate mock monthly trend data based on current data
+  const monthlyTrendData = [
+    { month: 'Jan', income: input.Income * 0.95, expenses: input.Total_Expenses * 0.98, savings: input.Actual_Savings_Potential * 0.9 },
+    { month: 'Feb', income: input.Income * 1.02, expenses: input.Total_Expenses * 0.96, savings: input.Actual_Savings_Potential * 1.1 },
+    { month: 'Mar', income: input.Income * 0.98, expenses: input.Total_Expenses * 1.01, savings: input.Actual_Savings_Potential * 0.8 },
+    { month: 'Apr', income: input.Income * 1.05, expenses: input.Total_Expenses * 0.94, savings: input.Actual_Savings_Potential * 1.2 },
+    { month: 'May', income: input.Income, expenses: input.Total_Expenses, savings: input.Actual_Savings_Potential },
+    { month: 'Jun', income: input.Income * 1.03, expenses: input.Total_Expenses * 0.92, savings: input.Actual_Savings_Potential * 1.15 },
+  ]
+
+  const totalPotentialSavings = potentialSavingsData.reduce((sum, item) => sum + item.potential, 0)
+  const savingsPercentage = ((totalPotentialSavings / input.Total_Expenses) * 100).toFixed(1)
+  const highestSavingsCategory = potentialSavingsData.reduce((max, item) => 
+    parseFloat(item.savings) > parseFloat(max.savings) ? item : max
+  )
+
   return (
     <div className="p-6 space-y-6 animate-fade-in">
       <div className="flex flex-col space-y-2">
@@ -53,11 +145,11 @@ const Analytics = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">$3,507</div>
+            <div className="text-2xl font-bold text-success">${totalPotentialSavings.toFixed(0)}</div>
             <p className="text-xs text-muted-foreground">
               <span className="text-success flex items-center">
                 <TrendingUp className="h-3 w-3 mr-1" />
-                18.5% optimization possible
+                {savingsPercentage}% optimization possible
               </span>
             </p>
           </CardContent>
@@ -69,7 +161,7 @@ const Analytics = () => {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">28%</div>
+            <div className="text-2xl font-bold">{(input.Expense_Efficiency * 100).toFixed(0)}%</div>
             <p className="text-xs text-muted-foreground">
               <span className="text-warning flex items-center">
                 <TrendingDown className="h-3 w-3 mr-1" />
@@ -85,10 +177,10 @@ const Analytics = () => {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Eating Out</div>
+            <div className="text-2xl font-bold">{highestSavingsCategory.category}</div>
             <p className="text-xs text-muted-foreground">
               <span className="text-success">
-                28.2% potential reduction
+                {highestSavingsCategory.savings}% potential reduction
               </span>
             </p>
           </CardContent>
@@ -100,10 +192,10 @@ const Analytics = () => {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-warning">25%</div>
+            <div className="text-2xl font-bold text-warning">{(input.Financial_Stress_Score * 100).toFixed(0)}%</div>
             <p className="text-xs text-muted-foreground">
               <span className="text-success">
-                Below average stress level
+                {input.Financial_Stress_Score < 0.5 ? "Below average stress level" : "Above average stress"}
               </span>
             </p>
           </CardContent>
@@ -185,16 +277,22 @@ const Analytics = () => {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
-              <RadialBarChart cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" data={[{name: 'Efficiency', value: 28, fill: '#10B981'}]}>
+              <RadialBarChart cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" data={[{name: 'Efficiency', value: input.Expense_Efficiency * 100, fill: '#10B981'}]}>
                 <RadialBar dataKey="value" cornerRadius={10} fill="#10B981" />
                 <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" className="fill-foreground text-2xl font-bold">
-                  28%
+                  {(input.Expense_Efficiency * 100).toFixed(0)}%
                 </text>
               </RadialBarChart>
             </ResponsiveContainer>
             <div className="text-center mt-4">
-              <Badge variant="outline" className="text-warning border-warning">
-                Needs Improvement
+              <Badge variant="outline" className={
+                input.Expense_Efficiency >= 0.7 ? "text-success border-success" :
+                input.Expense_Efficiency >= 0.4 ? "text-warning border-warning" :
+                "text-destructive border-destructive"
+              }>
+                {input.Expense_Efficiency >= 0.7 ? "Excellent" :
+                 input.Expense_Efficiency >= 0.4 ? "Needs Improvement" :
+                 "Poor"}
               </Badge>
             </div>
           </CardContent>

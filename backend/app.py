@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import numpy as np
 import tensorflow as tf
 import json
@@ -9,16 +9,12 @@ import warnings
 # Import chatbot blueprint
 from chatBot import chat_bp as chat_app
 
-# Initialize Flask app
-app = Flask(__name__)
-
-
+# Initialize Flask app with static folder pointing to React build
+app = Flask(__name__, static_folder='../frontend/dist', static_url_path='')
 
 # Suppress TensorFlow warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 warnings.filterwarnings('ignore', category=UserWarning, module='keras')
-
-app = Flask(__name__)
 
 # Paths
 MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'model')
@@ -125,14 +121,15 @@ def process_features(data):
     
     return np.array([features[name] for name in FEATURE_ORDER], dtype=np.float32).reshape(1, -1)
 
-@app.route('/')
+# API Routes
+@app.route('/api/')
 def home():
     return jsonify({"message": "Savings Prediction API", "features": TOTAL_FEATURES, "status": "running"})
 
-# Register the chat blueprint under /chat
-app.register_blueprint(chat_app, url_prefix='/chat')
+# Register the chat blueprint under /api/chat
+app.register_blueprint(chat_app, url_prefix='/api/chat')
 
-@app.route('/predict', methods=['POST'])
+@app.route('/api/predict', methods=['POST'])
 def predict():
     try:
         data = request.get_json()
@@ -177,11 +174,11 @@ def predict():
     except Exception as e:
         return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
 
-@app.route('/health')
+@app.route('/api/health')
 def health():
     return jsonify({"status": "healthy", "models": len(models), "features": TOTAL_FEATURES})
 
-@app.route('/data', methods=['GET'])
+@app.route('/api/data', methods=['GET'])
 def get_user_data():
     """Get saved user data"""
     try:
@@ -196,5 +193,21 @@ def get_user_data():
     except Exception as e:
         return jsonify({"error": f"Failed to load data: {str(e)}"}), 500
 
+# Serve React App
+@app.route('/')
+def serve_react():
+    """Serve the main React app"""
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static_or_react(path):
+    """Serve static files or React app for client-side routing"""
+    try:
+        # Try to serve static file first
+        return send_from_directory(app.static_folder, path)
+    except:
+        # If file doesn't exist, serve React app (for client-side routing)
+        return send_from_directory(app.static_folder, 'index.html')
+
 if __name__ == '__main__':
-    app.run(debug=True, threaded=True)
+    app.run(debug=True, threaded=True, port=5000)

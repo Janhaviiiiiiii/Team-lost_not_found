@@ -1,6 +1,8 @@
 
 import { Home, BarChart3, MessageCircle, User, TrendingUp, CreditCard, Target, FileBarChart } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
+import { cn } from "@/lib/utils"
+
 
 import {
   Sidebar,
@@ -34,9 +36,13 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed"
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive 
-      ? "bg-primary text-primary-foreground hover:bg-primary/90 font-medium" 
-      : " color-black text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+    cn(
+      "transition-colors",
+      {
+        "bg-primary text-primary-foreground hover:bg-primary/90 font-medium": isActive,
+        "text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground dark:text-sidebar-foreground": !isActive
+      }
+    )
 
   return (
     <Sidebar
