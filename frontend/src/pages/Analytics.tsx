@@ -145,7 +145,7 @@ const Analytics = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">${totalPotentialSavings.toFixed(0)}</div>
+            <div className="text-2xl font-bold text-success">₹{totalPotentialSavings.toFixed(0)}</div>
             <p className="text-xs text-muted-foreground">
               <span className="text-success flex items-center">
                 <TrendingUp className="h-3 w-3 mr-1" />
@@ -229,7 +229,7 @@ const Analytics = () => {
                     borderRadius: '8px'
                   }}
                   formatter={(value, name) => [
-                    name === 'potential' ? `$${value}` : `${value}%`,
+                    name === 'potential' ? `₹${value}` : `${value}%`,
                     name === 'potential' ? 'Potential Savings' : 'Savings %'
                   ]}
                 />
@@ -257,7 +257,7 @@ const Analytics = () => {
                     border: '1px solid #374151',
                     borderRadius: '8px'
                   }}
-                  formatter={(value) => [`$${Number(value).toLocaleString()}`, '']}
+                  formatter={(value) => [`₹${Number(value).toLocaleString()}`, '']}
                 />
                 <Area type="monotone" dataKey="income" stackId="1" stroke="#3B82F6" fill="#3B82F6" fillOpacity={0.6} />
                 <Area type="monotone" dataKey="expenses" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.6} />

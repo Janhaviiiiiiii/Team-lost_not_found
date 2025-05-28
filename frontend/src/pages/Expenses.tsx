@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Car, Home, Utensils, Gamepad2, Heart, GraduationCap, MoreHorizontal } from "lucide-react"
+import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Car, Home, Utensils, Gamepad2, Heart, GraduationCap, IndianRupeeIcon,MoreHorizontal } from "lucide-react"
 
 const expenseCategories = [
   {
@@ -119,10 +119,10 @@ const Expenses = () => {
         <Card className="border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Expenses</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <IndianRupeeIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalExpenses.toLocaleString()}</div>
+            <div className="text-2xl font-bold">₹{totalExpenses.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
               67.2% of total income
             </p>
@@ -135,7 +135,7 @@ const Expenses = () => {
             <Home className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${essentialExpenses.toLocaleString()}</div>
+            <div className="text-2xl font-bold">₹{essentialExpenses.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
               73.3% of total expenses
             </p>
@@ -148,7 +148,7 @@ const Expenses = () => {
             <Gamepad2 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${nonEssentialExpenses.toLocaleString()}</div>
+            <div className="text-2xl font-bold">₹{nonEssentialExpenses.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
               26.7% of total expenses
             </p>
@@ -161,7 +161,7 @@ const Expenses = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">${totalPotentialSavings.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-success">₹{totalPotentialSavings.toLocaleString()}</div>
             <p className="text-xs text-success">
               11.7% optimization possible
             </p>
@@ -202,10 +202,10 @@ const Expenses = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">${category.amount.toLocaleString()}</div>
+                    <div className="font-semibold">₹{category.amount.toLocaleString()}</div>
                     {category.potentialSavings > 0 && (
                       <div className="text-xs text-success">
-                        Save ${category.potentialSavings.toFixed(0)}
+                        Save ₹{category.potentialSavings.toFixed(0)}
                       </div>
                     )}
                   </div>
@@ -228,7 +228,7 @@ const Expenses = () => {
                 <div>
                   <h4 className="font-semibold text-success">Groceries Optimization</h4>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Potential savings: $1,686/month. Try meal planning, bulk buying, and using coupons.
+                    Potential savings: ₹1,686/month. Try meal planning, bulk buying, and using coupons.
                   </p>
                   <Button variant="outline" size="sm" className="mt-2 border-success text-success hover:bg-success hover:text-white">
                     View Tips
@@ -243,7 +243,7 @@ const Expenses = () => {
                 <div>
                   <h4 className="font-semibold text-warning">Utilities Reduction</h4>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Potential savings: $678/month. Consider energy-efficient appliances and smart usage.
+                    Potential savings: ₹678/month. Consider energy-efficient appliances and smart usage.
                   </p>
                   <Button variant="outline" size="sm" className="mt-2 border-warning text-warning hover:bg-warning hover:text-white">
                     Learn More
@@ -258,7 +258,7 @@ const Expenses = () => {
                 <div>
                   <h4 className="font-semibold text-info">Dining Out Alternative</h4>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Potential savings: $466/month. Try cooking at home more often and limit restaurant visits.
+                    Potential savings: ₹466/month. Try cooking at home more often and limit restaurant visits.
                   </p>
                   <Button variant="outline" size="sm" className="mt-2 border-info text-info hover:bg-info hover:text-white">
                     Get Recipes
@@ -273,7 +273,7 @@ const Expenses = () => {
                 <div>
                   <h4 className="font-semibold text-purple-600">Transportation Savings</h4>
                   <p className="text-sm text-muted-foreground mt-1">
-                    Potential savings: $329/month. Consider carpooling, public transport, or remote work options.
+                    Potential savings: ₹329/month. Consider carpooling, public transport, or remote work options.
                   </p>
                   <Button variant="outline" size="sm" className="mt-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white">
                     Explore Options
@@ -301,7 +301,7 @@ const Expenses = () => {
                   <div className="flex justify-between text-sm">
                     <span className="font-medium">{category.name}</span>
                     <span className="text-muted-foreground">
-                      ${category.amount.toLocaleString()} / ${budgetLimit.toLocaleString()}
+                      {category.amount.toLocaleString()} / {budgetLimit.toLocaleString()}
                     </span>
                   </div>
                   <Progress 

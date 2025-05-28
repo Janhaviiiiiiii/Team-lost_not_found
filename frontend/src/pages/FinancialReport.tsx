@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -70,7 +70,7 @@ const FinancialReport = () => {
   })
 
   // Load data from user_data.json when available
-  useState(() => {
+  useEffect(() => {
     if (userData?.predictions?.[0]?.input) {
       const input = userData.predictions[0].input
       form.reset({
@@ -93,17 +93,18 @@ const FinancialReport = () => {
         desiredSavingsPercentage: input.Desired_Savings_Percentage,
       })
     }
-  })
+  }, [form, userData])
 
   const calculateAdditionalFields = (data: FormData): PredictionInput => {
-    const totalExpenses = data.rent + data.loanRepayment + data.insurance + data.groceries + 
-                         data.transport + data.eatingOut + data.entertainment + data.utilities + 
-                         data.healthcare + data.education + data.miscellaneous
-    
+    const totalExpenses = data.rent + data.loanRepayment + data.insurance + data.groceries +
+      data.transport + data.eatingOut + data.entertainment + data.utilities +
+      data.healthcare + data.education + data.miscellaneous
+
     const disposableIncome = data.income - totalExpenses
     const savingsRate = data.desiredSavingsPercentage / 100
-    const actualSavingsPotential = disposableIncome * savingsRate
-    
+    const desiredSavingsAmount = data.income * savingsRate  // Based on income, not disposable income
+    const actualSavingsPotential = Math.min(desiredSavingsAmount, disposableIncome)  // Can't save more than disposable income
+        
     // Calculate potential savings (simplified calculation)
     const potentialSavings = {
       groceries: data.groceries * 0.25,
@@ -120,7 +121,7 @@ const FinancialReport = () => {
     const essentialExpenses = data.rent + data.insurance + data.loanRepayment
     const essentialExpenseRatio = essentialExpenses / data.income
     const nonEssentialIncome = data.income - essentialExpenses
-    
+
     // Simplified calculations for derived fields
     const expenseEfficiency = 0.28 // Default value, would be calculated by ML model
     const debtToIncomeRatio = data.loanRepayment / data.income
@@ -147,10 +148,10 @@ const FinancialReport = () => {
     }
 
     // Income bracket encoding (simplified)
-    const incomeLevel = data.income < 30000 ? 'Low' : 
-                       data.income < 50000 ? 'Lower_Mid' :
-                       data.income < 80000 ? 'Middle' : 'Upper_Mid'
-    
+    const incomeLevel = data.income < 30000 ? 'Low' :
+      data.income < 50000 ? 'Lower_Mid' :
+        data.income < 80000 ? 'Middle' : 'Upper_Mid'
+
     const incomeBracketEncoding = {
       Income_Bracket_Low_Income: incomeLevel === 'Low' ? 1 : 0,
       Income_Bracket_Lower_Mid: incomeLevel === 'Lower_Mid' ? 1 : 0,
@@ -214,11 +215,11 @@ const FinancialReport = () => {
     try {
       const predictionInput = calculateAdditionalFields(data)
       console.log("Sending prediction input:", predictionInput)
-      
+
       const response = await predictionAPI.predict(predictionInput)
       setMlResponse(response)
       setShowResults(true)
-      
+
       toast({
         title: "Report Generated",
         description: "Your AI financial report has been generated successfully!",
@@ -244,7 +245,7 @@ const FinancialReport = () => {
   // Show existing results if available
   if (showResults && mlResponse) {
     const riskInfo = getRiskLevel(mlResponse.multi_task_model.risk_score)
-    
+
     return (
       <div className="space-y-8 animate-fade-in">
         <div className="flex flex-col space-y-4">
@@ -257,9 +258,9 @@ const FinancialReport = () => {
                 Personalized insights powered by machine learning
               </p>
             </div>
-            <Button 
-              onClick={() => setShowResults(false)} 
-              variant="outline" 
+            <Button
+              onClick={() => setShowResults(false)}
+              variant="outline"
               className="rounded-xl"
             >
               Generate New Report
@@ -286,7 +287,7 @@ const FinancialReport = () => {
                 </div>
                 <Progress value={mlResponse.savings_model.confidence * 100} className="h-3" />
               </div>
-              
+
               <div className="flex items-center space-x-3 p-4 bg-white/50 dark:bg-black/20 rounded-xl">
                 <CheckCircle className="h-8 w-8 text-green-600" />
                 <div>
@@ -319,12 +320,12 @@ const FinancialReport = () => {
                     {riskInfo.level}
                   </Badge>
                 </div>
-                <Progress 
-                  value={mlResponse.multi_task_model.risk_score * 100} 
+                <Progress
+                  value={mlResponse.multi_task_model.risk_score * 100}
                   className="h-3"
                 />
               </div>
-              
+
               <div className="flex items-center space-x-3 p-4 bg-white/50 dark:bg-black/20 rounded-xl">
                 <AlertTriangle className={`h-8 w-8 ${riskInfo.textColor}`} />
                 <div>
@@ -358,7 +359,7 @@ const FinancialReport = () => {
                     <p className="text-sm text-muted-foreground mt-1">Recommended annual savings</p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="p-6 bg-white/50 dark:bg-black/20 rounded-xl">
                     <h3 className="text-lg font-semibold mb-2">Multi-Task AI Model</h3>
@@ -423,9 +424,9 @@ const FinancialReport = () => {
                   <FormItem>
                     <FormLabel className="text-base font-medium">Age</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
+                      <Input
+                        type="number"
+                        {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                         className="rounded-xl h-12 text-base"
                       />
@@ -442,9 +443,9 @@ const FinancialReport = () => {
                   <FormItem>
                     <FormLabel className="text-base font-medium">Number of Dependents</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
+                      <Input
+                        type="number"
+                        {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                         className="rounded-xl h-12 text-base"
                       />
@@ -520,11 +521,11 @@ const FinancialReport = () => {
                 name="income"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-base font-medium">Monthly Income ($)</FormLabel>
+                    <FormLabel className="text-base font-medium">Monthly Income (₹)</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="number" 
-                        {...field} 
+                      <Input
+                        type="number"
+                        {...field}
                         onChange={(e) => field.onChange(Number(e.target.value))}
                         className="rounded-xl h-12 text-base"
                       />
@@ -570,10 +571,10 @@ const FinancialReport = () => {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {[
-                { name: 'rent', label: 'Rent/Mortgage ($)' },
-                { name: 'utilities', label: 'Utilities ($)' },
-                { name: 'insurance', label: 'Insurance ($)' },
-                { name: 'loanRepayment', label: 'Loan Repayment ($)' }
+                { name: 'rent', label: 'Rent/Mortgage (₹)' },
+                { name: 'utilities', label: 'Utilities (₹)' },
+                { name: 'insurance', label: 'Insurance (₹)' },
+                { name: 'loanRepayment', label: 'Loan Repayment (₹)' }
               ].map((field) => (
                 <FormField
                   key={field.name}
@@ -583,9 +584,9 @@ const FinancialReport = () => {
                     <FormItem>
                       <FormLabel className="text-base font-medium">{field.label}</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          {...formField} 
+                        <Input
+                          type="number"
+                          {...formField}
                           onChange={(e) => formField.onChange(Number(e.target.value))}
                           className="rounded-xl h-12 text-base"
                         />
@@ -611,13 +612,13 @@ const FinancialReport = () => {
             </CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
-                { name: 'groceries', label: 'Groceries ($)' },
-                { name: 'transport', label: 'Transport ($)' },
-                { name: 'eatingOut', label: 'Eating Out ($)' },
-                { name: 'entertainment', label: 'Entertainment ($)' },
-                { name: 'healthcare', label: 'Healthcare ($)' },
-                { name: 'education', label: 'Education ($)' },
-                { name: 'miscellaneous', label: 'Miscellaneous ($)' }
+                { name: 'groceries', label: 'Groceries (₹)' },
+                { name: 'transport', label: 'Transport (₹)' },
+                { name: 'eatingOut', label: 'Eating Out (₹)' },
+                { name: 'entertainment', label: 'Entertainment (₹)' },
+                { name: 'healthcare', label: 'Healthcare (₹)' },
+                { name: 'education', label: 'Education (₹)' },
+                { name: 'miscellaneous', label: 'Miscellaneous (₹)' }
               ].map((field) => (
                 <FormField
                   key={field.name}
@@ -627,9 +628,9 @@ const FinancialReport = () => {
                     <FormItem>
                       <FormLabel className="text-base font-medium">{field.label}</FormLabel>
                       <FormControl>
-                        <Input 
-                          type="number" 
-                          {...formField} 
+                        <Input
+                          type="number"
+                          {...formField}
                           onChange={(e) => formField.onChange(Number(e.target.value))}
                           className="rounded-xl h-12 text-base"
                         />
@@ -643,9 +644,9 @@ const FinancialReport = () => {
           </Card>
 
           <div className="flex justify-center pt-8">
-            <Button 
-              type="submit" 
-              disabled={isSubmitting} 
+            <Button
+              type="submit"
+              disabled={isSubmitting}
               className="w-full md:w-auto px-12 h-14 text-lg rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
             >
               {isSubmitting ? (

@@ -1,8 +1,7 @@
-
 import { Home, BarChart3, MessageCircle, User, TrendingUp, CreditCard, Target, FileBarChart } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import { cn } from "@/services/utils"
-
+import { useTheme } from "@/contexts/ThemeContext"
 
 import {
   Sidebar,
@@ -34,24 +33,56 @@ export function AppSidebar() {
   const location = useLocation()
   const currentPath = location.pathname
   const isCollapsed = state === "collapsed"
-
-  const getNavCls = ({ isActive }: { isActive: boolean }) =>
+  const { theme } = useTheme()
+  // Fixed function to properly handle NavLink's isActive
+  const getNavCls = (isActive, isDisabled = false) =>
     cn(
-      "transition-colors",
-      {
-        "bg-primary text-primary-foreground hover:bg-primary/90 font-medium": isActive,
-        "text-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground dark:text-sidebar-foreground": !isActive
-      }
+      "transition-colors flex items-center",
+      isActive
+        ? "bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
+        : isDisabled
+          ? theme === 'light'
+            ? "text-slate-400 cursor-not-allowed"
+            : "text-sidebar-foreground/40 cursor-not-allowed"
+          : theme === 'light'
+            ? "text-black-900 hover:bg-slate-100 hover:text-slate-950"
+            : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
     )
+  // Helper to render menu items with disabled state
+  const renderMenuItem = (item, isActive, isDisabled = false) => {
+    const IconComponent = item.icon;
+    return (
+      <SidebarMenuItem key={item.title}>
+        <SidebarMenuButton asChild className="h-10 rounded-lg" disabled={isDisabled}>
+          <NavLink to={item.url} end className={() => getNavCls(isActive, isDisabled)} tabIndex={isDisabled ? -1 : 0}>
+            <IconComponent className={cn(
+              "h-5 w-5 flex-shrink-0 min-w-[20px]", 
+              isDisabled 
+                ? (theme === 'light' ? 'text-slate-400' : 'text-sidebar-foreground/40') 
+                : isActive
+                  ? (theme === 'light' ? 'text-slate-900' : 'text-primary-foreground') // Changed for active icon in light mode
+                  : theme === 'light' 
+                    ? 'text-slate-900' 
+                    : 'text-sidebar-foreground'
+            )} />
+            {!isCollapsed && <span className="font-medium ml-3">{item.title}</span>}
+          </NavLink>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  }
 
   return (
     <Sidebar
-      className={`${isCollapsed ? "w-14" : "w-64"} border-r border-sidebar-border bg-sidebar`}
+      className={cn(
+        isCollapsed ? "w-14" : "w-64",
+        theme === 'light' ? "bg-white border-r border-slate-200" : "bg-sidebar border-r border-sidebar-border"
+      )}
       collapsible="icon"
     >
-      <SidebarContent className="bg-sidebar">
-        <div className="p-4 border-b border-sidebar-border">
-          <h2 className={`font-bold text-xl text-sidebar-foreground ${isCollapsed ? 'hidden' : 'block'}`}>
+      <SidebarContent className={theme === 'light' ? 'bg-white' : 'bg-sidebar'}>
+        <div className="p-4 border-b" style={{ borderColor: theme === 'light' ? '#e5e7eb' : undefined }}>
+          <h2 className={`font-bold text-xl ${theme === 'light' ? 'text-slate-800' : 'text-sidebar-foreground'} ${isCollapsed ? 'hidden' : 'block'}`}>
             FinPal
           </h2>
           {isCollapsed && (
@@ -63,41 +94,29 @@ export function AppSidebar() {
 
         <div className="flex-1 overflow-auto py-4">
           <SidebarGroup>
-            <SidebarGroupLabel className={`${isCollapsed ? 'hidden' : 'block'} text-sidebar-foreground/70 px-4 mb-2`}>
+            <SidebarGroupLabel className={`${isCollapsed ? 'hidden' : 'block'} ${theme === 'light' ? 'text-slate-500' : 'text-sidebar-foreground/70'} px-4 mb-2`}>
               Overview
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu className="px-2 space-y-1">
-                {mainItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild className="h-10 rounded-lg">
-                      <NavLink to={item.url} end className={getNavCls}>
-                        <item.icon className="h-5 w-5 flex-shrink-0" />
-                        {!isCollapsed && <span className="font-medium ml-3">{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {mainItems.map((item) => {
+                  const isActive = currentPath === item.url || (item.url === "/" && currentPath === "/");
+                  return renderMenuItem(item, isActive, false);
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
 
           <SidebarGroup className="mt-6">
-            <SidebarGroupLabel className={`${isCollapsed ? 'hidden' : 'block'} text-sidebar-foreground/70 px-4 mb-2`}>
+            <SidebarGroupLabel className={`${isCollapsed ? 'hidden' : 'block'} ${theme === 'light' ? 'text-slate-500' : 'text-sidebar-foreground/70'} px-4 mb-2`}>
               AI Tools
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu className="px-2 space-y-1">
-                {otherItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild className="h-10 rounded-lg">
-                      <NavLink to={item.url} className={getNavCls}>
-                        <item.icon className="h-5 w-5 flex-shrink-0" />
-                        {!isCollapsed && <span className="font-medium ml-3">{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                {otherItems.map((item) => {
+                  const isActive = currentPath === item.url;
+                  return renderMenuItem(item, isActive, false);
+                })}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>

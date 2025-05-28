@@ -1,64 +1,111 @@
-
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { ArrowUp, ArrowDown, TrendingUp, DollarSign, Target, AlertTriangle } from "lucide-react"
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts'
 
-const userData = {
-  Income: 44637.25,
-  Age: 49,
-  Dependents: 0,
-  Occupation: "Self_Employed",
-  City_Tier: "Tier_1",
-  Disposable_Income: 11265.63,
-  Desired_Savings_Percentage: 13.89,
-  Savings_Rate: 0.1389,
-  Actual_Savings_Potential: 3200.0,
-  Essential_Expenses: 22000.0,
-  Total_Expenses: 30000.0,
-  Financial_Stress_Score: 0.25,
-}
-
-const mlResults = {
-  savings_model: {
-    can_achieve_savings: true,
-    confidence: 0.9999999403953552
-  },
-  amount_model: {
-    recommended_savings: 102038.546875
-  },
-  multi_task_model: {
-    can_achieve_savings: true,
-    savings_confidence: 0.9999930262565613,
-    recommended_savings_amount: 113639.4375,
-    financial_risk: true,
-    risk_score: 0.8489888310432434
-  }
-}
-
-const expenseData = [
-  { name: 'Rent', value: 13391.17, color: '#8884d8' },
-  { name: 'Groceries', value: 6658.77, color: '#82ca9d' },
-  { name: 'Utilities', value: 2911.79, color: '#ffc658' },
-  { name: 'Transport', value: 2636.97, color: '#ff7300' },
-  { name: 'Insurance', value: 2206.49, color: '#00ff00' },
-  { name: 'Eating Out', value: 1651.80, color: '#ff0000' },
-  { name: 'Healthcare', value: 1546.91, color: '#8dd1e1' },
-  { name: 'Entertainment', value: 1536.18, color: '#d084d0' },
-  { name: 'Miscellaneous', value: 831.53, color: '#87d068' },
-]
-
-const savingsData = [
-  { month: 'Jan', actual: 2800, target: 3200 },
-  { month: 'Feb', actual: 3100, target: 3200 },
-  { month: 'Mar', actual: 2900, target: 3200 },
-  { month: 'Apr', actual: 3400, target: 3200 },
-  { month: 'May', actual: 3200, target: 3200 },
-  { month: 'Jun', actual: 3500, target: 3200 },
-]
-
 const Dashboard = () => {
+  const [userData, setUserData] = useState(null)
+  const [mlResults, setMlResults] = useState(null)
+  const [expenseData, setExpenseData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  // Static savings data (you can make this dynamic too if needed)
+  const savingsData = [
+    { month: 'Jan', actual: 2800, target: 3200 },
+    { month: 'Feb', actual: 3100, target: 3200 },
+    { month: 'Mar', actual: 2900, target: 3200 },
+    { month: 'Apr', actual: 3400, target: 3200 },
+    { month: 'May', actual: 3200, target: 3200 },
+    { month: 'Jun', actual: 3500, target: 3200 },
+  ]
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch('/user_data.json')
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data')
+      }
+      
+      const data = await response.json()
+      const latest = data.predictions[data.predictions.length - 1]
+      
+      if (!latest) {
+        throw new Error('No prediction data available')
+      }
+
+      // Set user data from input
+      setUserData(latest.input)
+      
+      // Set ML results from output
+      setMlResults(latest.output)
+
+      // Build expense data from input
+      const expenses = [
+        { name: 'Rent', value: latest.input.Rent || 0, color: '#8884d8' },
+        { name: 'Groceries', value: latest.input.Groceries || 0, color: '#82ca9d' },
+        { name: 'Utilities', value: latest.input.Utilities || 0, color: '#ffc658' },
+        { name: 'Transport', value: latest.input.Transport || 0, color: '#ff7300' },
+        { name: 'Insurance', value: latest.input.Insurance || 0, color: '#00ff00' },
+        { name: 'Eating Out', value: latest.input.Eating_Out || 0, color: '#ff0000' },
+        { name: 'Healthcare', value: latest.input.Healthcare || 0, color: '#8dd1e1' },
+        { name: 'Entertainment', value: latest.input.Entertainment || 0, color: '#d084d0' },
+        { name: 'Miscellaneous', value: latest.input.Miscellaneous || 0, color: '#87d068' },
+      ].filter(expense => expense.value > 0) // Only show expenses that have values
+
+      setExpenseData(expenses)
+      setError(null)
+    } catch (err) {
+      setError(err.message)
+      console.error('Error fetching user data:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    // Fetch data on component mount
+    fetchUserData()
+
+    // Set up polling to fetch data every 30 seconds
+    const interval = setInterval(fetchUserData, 30000)
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(interval)
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">Loading dashboard data...</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg text-red-500">Error: {error}</div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!userData || !mlResults) {
+    return (
+      <div className="p-6 space-y-6">
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">No data available</div>
+        </div>
+      </div>
+    )
+  }
+
   const savingsGoalProgress = (userData.Actual_Savings_Potential / mlResults.amount_model.recommended_savings) * 100
 
   return (
@@ -79,7 +126,7 @@ const Dashboard = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${userData.Income.toLocaleString()}</div>
+            <div className="text-2xl font-bold">₹{userData.Income.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
               <span className="text-success flex items-center">
                 <ArrowUp className="h-3 w-3 mr-1" />
@@ -95,7 +142,7 @@ const Dashboard = () => {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${userData.Actual_Savings_Potential.toLocaleString()}</div>
+            <div className="text-2xl font-bold">₹{userData.Actual_Savings_Potential.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
               <span className="text-warning flex items-center">
                 <ArrowDown className="h-3 w-3 mr-1" />
@@ -160,7 +207,7 @@ const Dashboard = () => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Amount']} />
+                <Tooltip formatter={(value) => [`₹${Number(value).toLocaleString()}`, 'Amount']} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
@@ -184,7 +231,7 @@ const Dashboard = () => {
                     border: '1px solid #374151',
                     borderRadius: '8px'
                   }}
-                  formatter={(value) => [`$${value}`, '']}
+                  formatter={(value) => [`₹${value}`, '']}
                 />
                 <Line type="monotone" dataKey="actual" stroke="#10B981" strokeWidth={3} />
                 <Line type="monotone" dataKey="target" stroke="#F59E0B" strokeWidth={2} strokeDasharray="5 5" />
@@ -218,7 +265,7 @@ const Dashboard = () => {
               <div>
                 <h4 className="font-semibold text-info">Recommended Savings Target</h4>
                 <p className="text-sm text-muted-foreground">
-                  Based on your profile, we recommend saving ${mlResults.amount_model.recommended_savings.toLocaleString()} 
+                  Based on your profile, we recommend saving ₹{mlResults.amount_model.recommended_savings.toLocaleString()} 
                   to optimize your financial health.
                 </p>
               </div>
@@ -261,7 +308,11 @@ const Dashboard = () => {
             <div className="pt-4 border-t">
               <div className="flex justify-between items-center">
                 <span className="text-sm">Age Group</span>
-                <Badge variant="secondary">Mid Career</Badge>
+                <Badge variant="secondary">
+                  {userData.Age < 30 ? 'Young Adult' : 
+                   userData.Age < 45 ? 'Mid Career' : 
+                   userData.Age < 60 ? 'Pre Retirement' : 'Senior'}
+                </Badge>
               </div>
             </div>
 
