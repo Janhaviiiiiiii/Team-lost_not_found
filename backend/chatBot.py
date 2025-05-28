@@ -3,6 +3,7 @@ from google import genai
 import json
 import os
 from dotenv import load_dotenv
+from database import DatabaseService
 
 load_dotenv()
 
@@ -45,14 +46,35 @@ generation_config = {
 USER_DATA_FILE = os.path.join(os.path.dirname(__file__), 'user_data.json')
 
 def read_user_data():
+    """Fallback function to read from JSON file"""
     if not os.path.exists(USER_DATA_FILE):
         return {"predictions": []}
     with open(USER_DATA_FILE, 'r') as f:
         return json.load(f)
 
 def get_latest_prediction():
-    data = read_user_data()
-    return data["predictions"][-1] if data.get("predictions") else None
+    """Get latest prediction from Supabase or fallback to JSON"""
+    try:
+        # Try to get from Supabase first
+        latest_prediction = DatabaseService.get_latest_prediction()
+        
+        if latest_prediction:
+            # Transform Supabase data to match expected format
+            return {
+                "timestamp": latest_prediction["timestamp"],
+                "input": latest_prediction["input_data"],
+                "output": latest_prediction["output_data"]
+            }
+        
+        # Fallback to JSON file
+        data = read_user_data()
+        return data["predictions"][-1] if data.get("predictions") else None
+        
+    except Exception as e:
+        print(f"Error getting latest prediction from Supabase: {e}")
+        # Fallback to JSON file
+        data = read_user_data()
+        return data["predictions"][-1] if data.get("predictions") else None
 
 # Create blueprint
 chat_bp = Blueprint('chat_bp', __name__)
