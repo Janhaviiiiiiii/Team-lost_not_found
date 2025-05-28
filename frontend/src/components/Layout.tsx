@@ -38,7 +38,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Button variant="ghost" size="icon" className="rounded-xl h-10 w-10 hover:bg-accent/80">
                 <Bell className="h-5 w-5" />
               </Button>
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/60 rounded-xl flex items-center justify-center text-primary-foreground font-semibold text-sm">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/40 rounded-xl flex items-center justify-center text-primary-foreground font-semibold text-sm">
                 U
               </div>
             </div>
