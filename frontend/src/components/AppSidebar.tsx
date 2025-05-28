@@ -60,7 +60,7 @@ export function AppSidebar() {
               isDisabled 
                 ? (theme === 'light' ? 'text-slate-400' : 'text-sidebar-foreground/40') 
                 : isActive
-                  ? 'text-primary-foreground'
+                  ? (theme === 'light' ? 'text-slate-900' : 'text-primary-foreground') // Changed for active icon in light mode
                   : theme === 'light' 
                     ? 'text-slate-900' 
                     : 'text-sidebar-foreground'
