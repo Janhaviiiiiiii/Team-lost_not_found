@@ -8,6 +8,8 @@ import threading
 import warnings
 # Import chatbot blueprint
 from chatBot import chat_bp as chat_app
+# Import database service
+from database import DatabaseService
 
 # Initialize Flask app with static folder pointing to React build
 app = Flask(__name__, static_folder='../frontend/dist', static_url_path='')
@@ -38,7 +40,31 @@ for name in ['savings', 'amount', 'multi_task']:
 file_lock = threading.Lock()
 
 def save_user_data(input_data, output_data):
-    """Save user input and output to JSON file asynchronously"""
+    """Save user input and output to Supabase database"""
+    try:
+        prediction_data = {
+            "timestamp": datetime.now().isoformat(),
+            "input": input_data,
+            "output": output_data
+        }
+        
+        # Save to Supabase
+        result = DatabaseService.create_prediction(prediction_data)
+        
+        if result:
+            print(f"Data saved to Supabase successfully with ID: {result.get('id')}")
+        else:
+            print("Failed to save data to Supabase")
+            # Fallback to JSON file if Supabase fails
+            save_user_data_json(input_data, output_data)
+            
+    except Exception as e:
+        print(f"Error saving to Supabase: {e}")
+        # Fallback to JSON file if Supabase fails
+        save_user_data_json(input_data, output_data)
+
+def save_user_data_json(input_data, output_data):
+    """Fallback: Save user input and output to JSON file"""
     def _save():
         try:
             with file_lock:
@@ -180,8 +206,27 @@ def health():
 
 @app.route('/api/data', methods=['GET'])
 def get_user_data():
-    """Get saved user data"""
+    """Get saved user data from Supabase or fallback to JSON"""
     try:
+        # Try to get data from Supabase first
+        predictions = DatabaseService.get_user_predictions()
+        
+        if predictions:
+            # Transform Supabase data to match expected format
+            formatted_predictions = []
+            for pred in predictions:
+                formatted_predictions.append({
+                    "timestamp": pred["timestamp"],
+                    "input": pred["input_data"],
+                    "output": pred["output_data"]
+                })
+            
+            return jsonify({
+                "total_predictions": len(formatted_predictions),
+                "predictions": formatted_predictions
+            })
+        
+        # Fallback to JSON file if Supabase is empty or fails
         if os.path.exists(USER_DATA_FILE):
             with open(USER_DATA_FILE, 'r') as f:
                 data = json.load(f)
@@ -189,8 +234,23 @@ def get_user_data():
                     "total_predictions": len(data.get("predictions", [])),
                     "predictions": data.get("predictions", [])
                 })
+        
         return jsonify({"total_predictions": 0, "predictions": []})
+        
     except Exception as e:
+        print(f"Error in get_user_data: {e}")
+        # Fallback to JSON file on any error
+        try:
+            if os.path.exists(USER_DATA_FILE):
+                with open(USER_DATA_FILE, 'r') as f:
+                    data = json.load(f)
+                    return jsonify({
+                        "total_predictions": len(data.get("predictions", [])),
+                        "predictions": data.get("predictions", [])
+                    })
+        except Exception as json_error:
+            print(f"JSON fallback also failed: {json_error}")
+        
         return jsonify({"error": f"Failed to load data: {str(e)}"}), 500
 
 # Serve React App

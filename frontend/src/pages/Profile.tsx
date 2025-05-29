@@ -6,48 +6,98 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { User, Edit, Save, Shield, Bell, CreditCard, Target, TrendingUp } from "lucide-react"
+import { User, Edit, Save, Shield, Bell, CreditCard, Target, TrendingUp, Loader2 } from "lucide-react"
 import { useState } from "react"
-
-const userData = {
-  Income: 44637.25,
-  Age: 49,
-  Dependents: 0,
-  Occupation: "Self_Employed",
-  City_Tier: "Tier_1",
-  Desired_Savings_Percentage: 13.89,
-  Financial_Stress_Score: 0.25,
-  Savings_Rate: 0.1389,
-}
+import { useUserData } from "@/hooks/useUserData"
 
 const Profile = () => {
+  const { data: userData, isLoading: loading, error } = useUserData()
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
     name: "John Smith",
     email: "john.smith@email.com",
     phone: "+1 (555) 123-4567",
-    income: userData.Income,
-    age: userData.Age,
-    dependents: userData.Dependents,
-    occupation: userData.Occupation,
-    cityTier: userData.City_Tier,
-    savingsGoal: userData.Desired_Savings_Percentage,
+    income: 0,
+    age: 0,
+    dependents: 0,
+    occupation: "",
+    cityTier: "",
+    savingsGoal: 0,
+  })
+  // Update form data when userData loads
+  useState(() => {
+    if (userData?.predictions?.[0]?.input) {
+      const userInput = userData.predictions[0].input
+      setFormData(prev => ({
+        ...prev,
+        income: userInput.Income || 0,
+        age: userInput.Age || 0,
+        dependents: userInput.Dependents || 0,
+        occupation: userInput.Occupation || "",
+        cityTier: userInput.City_Tier || "",
+        savingsGoal: userInput.Desired_Savings_Percentage || 0,
+      }))
+    }
   })
 
-  const handleSave = () => {
-    setIsEditing(false)
-    // Here you would typically save to your backend
-    console.log('Saving profile data:', formData)
+  if (loading) {
+    return (
+      <div className="p-6 space-y-6 animate-fade-in">
+        <div className="flex items-center justify-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+          <span className="ml-2">Loading profile data...</span>
+        </div>
+      </div>
+    )
   }
 
+  if (error || !userData) {
+    return (
+      <div className="p-6 space-y-6 animate-fade-in">
+        <div className="flex items-center justify-center h-64">
+          <p className="text-destructive">Failed to load profile data. Please try again.</p>
+        </div>
+      </div>
+    )
+  }
+  const handleSave = () => {
+    setIsEditing(false)
+    // Here you would typically save to your backend/Supabase
+    console.log('Saving profile data:', formData)
+  }  // Calculate financial health based on real user data
+  const userInput = userData?.predictions?.[0]?.input
+  const userOutput = userData?.predictions?.[0]?.output
+  
   const financialHealth = {
-    score: 72,
+    score: userOutput?.multi_task_model?.risk_score ? 
+           Math.round((1 - userOutput.multi_task_model.risk_score) * 100) : 
+           Math.round((1 - (userInput?.Financial_Stress_Score || 0)) * 100),
     factors: [
-      { name: 'Income Stability', score: 85, status: 'good' },
-      { name: 'Savings Rate', score: 70, status: 'average' },
-      { name: 'Expense Management', score: 60, status: 'needs_improvement' },
-      { name: 'Emergency Fund', score: 45, status: 'critical' },
-      { name: 'Investment Portfolio', score: 30, status: 'critical' },
+      { 
+        name: 'Income Stability', 
+        score: userInput?.Occupation === 'Employed' ? 85 : userInput?.Occupation === 'Self_Employed' ? 70 : 60, 
+        status: userInput?.Occupation === 'Employed' ? 'good' : 'average' 
+      },
+      { 
+        name: 'Savings Rate', 
+        score: Math.min(100, (userInput?.Savings_Rate || 0) * 500), // Scale 0.2 savings rate to ~100 score
+        status: (userInput?.Savings_Rate || 0) > 0.15 ? 'good' : (userInput?.Savings_Rate || 0) > 0.10 ? 'average' : 'needs_improvement' 
+      },
+      { 
+        name: 'Expense Management', 
+        score: Math.max(0, 100 - (userInput?.Financial_Stress_Score || 0) * 100), 
+        status: (userInput?.Financial_Stress_Score || 0) < 0.3 ? 'good' : (userInput?.Financial_Stress_Score || 0) < 0.6 ? 'average' : 'critical' 
+      },
+      { 
+        name: 'Emergency Fund', 
+        score: Math.min(100, ((userInput?.Actual_Savings_Potential || 0) / (userInput?.Income || 1)) * 20), // Based on savings potential
+        status: ((userInput?.Actual_Savings_Potential || 0) / (userInput?.Income || 1)) > 0.5 ? 'good' : ((userInput?.Actual_Savings_Potential || 0) / (userInput?.Income || 1)) > 0.3 ? 'average' : 'critical' 
+      },
+      { 
+        name: 'Investment Portfolio', 
+        score: userOutput?.multi_task_model?.can_achieve_savings ? 75 : 25, // Based on ML prediction
+        status: userOutput?.multi_task_model?.can_achieve_savings ? 'good' : 'critical' 
+      },
     ]
   }
 
