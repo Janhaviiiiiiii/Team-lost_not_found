@@ -11,73 +11,83 @@
 
 FinBro.ai is an advanced financial management platform that leverages cutting-edge machine learning models and Google's Gemini AI to provide personalized financial guidance. By analyzing over 26 financial parameters, including income, expenses, and spending patterns, our system offers accurate savings predictions, risk assessments, and tailored financial advice through an intuitive chat interface.
 
-<p align="center">
-  <img src="images/1-white-dashboard.png" alt="Dashboard Light Theme" width="800"/>
-</p>
-
 ## 🌟 Key Features
 
-### 1. AI Financial Analysis Models
+### 1. Smart Financial Dashboard
 
--   **Savings Achievement Prediction**: Advanced ML model analyzing 26+ parameters to predict savings goal attainment
--   **Optimal Savings Calculator**: Data-driven recommendations for monthly savings targets
--   **Risk Assessment**: Sophisticated financial risk profiling using multi-task learning
--   **Confidence Scoring**: Precise confidence metrics for all predictions
+-   **Financial Overview**: Comprehensive view of income, expenses, and savings
+-   **ML-Powered Insights**: Real-time AI predictions for savings goals and risk assessment
+-   **Key Metrics**: Essential financial indicators including savings rate and expense ratios
+-   **Quick Stats**: Visual breakdowns of financial health metrics
 
 <p align="center">
-  <img src="images/2-analytics.png" alt="Analytics Dark Theme" width="800"/>
+  <img src="images/1-white-dashboard.png" alt="Smart Financial Dashboard" width="800"/>
 </p>
 
-### 2. Gemini-Powered AI Assistant
+### 2. Advanced Analytics
 
--   **Personalized Financial Advisor**: Processes 26+ financial parameters
--   **Smart Insights**: Real-time, context-aware financial advice
--   **Natural Interaction**: Conversational interface with 100-word digestible responses
--   **Data-Backed Suggestions**: Recommendations based on your financial profile
+-   **Savings Potential**: Detailed analysis of potential savings across categories
+-   **Expense Efficiency**: Smart scoring of your spending patterns
+-   **Financial Health Metrics**: Comprehensive scorecard with target comparisons
+-   **Trend Analysis**: Monthly financial patterns and projections
 
 <p align="center">
-  <img src="images/3-white-expense.png" alt="Expenses Light Theme" width="800"/>
+  <img src="images/2-analytics.png" alt="Advanced Analytics Dashboard" width="800"/>
 </p>
 
-### 3. Smart Savings Tracker
+### 3. Expense Management
 
--   **Goal Setting & Monitoring**: Visual tracking of savings objectives
--   **Progress Analytics**: Detailed breakdowns of saving patterns
--   **AI-Powered Recommendations**: Personalized tips to optimize savings
+-   **Category Breakdown**: Detailed categorization of monthly expenses
+-   **Essential vs Non-Essential**: Smart categorization of spending
+-   **Savings Opportunities**: AI-identified areas for potential savings
+-   **Spending Insights**: Personalized recommendations for expense optimization
 
 <p align="center">
-  <img src="images/4-savings.png" alt="Savings Goals Dark Theme" width="800"/>
+  <img src="images/3-white-expense.png" alt="Expense Management" width="800"/>
 </p>
 
-### 4. Interactive Chat Interface
+### 4. Smart Savings Tracker
 
--   **Real-time Assistance**: Instant responses to financial queries
--   **Contextual Understanding**: AI that remembers your financial context
--   **Actionable Insights**: Practical advice you can implement immediately
+-   **Goal Progress**: Real-time tracking of savings objectives
+-   **AI Confidence Scoring**: ML-powered assessment of goal achievability
+-   **Monthly Projections**: Predicted savings trajectories
+-   **Personalized Recommendations**: AI-driven savings optimization strategies
 
 <p align="center">
-  <img src="images/5-chatbot.png" alt="AI Assistant Light Theme" width="800"/>
+  <img src="images/4-savings.png" alt="Savings Goals Dashboard" width="800"/>
 </p>
 
-### 5. Financial Report Generator
+### 5. Gemini-Powered AI Assistant
 
--   **Comprehensive Analysis**: Detailed breakdown of your financial health
--   **Risk Assessment**: Visual representation of financial risks
--   **Future Projections**: AI-powered financial forecasting
+-   **Natural Language Interface**: Conversational financial guidance
+-   **Contextual Awareness**: Understands your financial profile
+-   **Real-time Insights**: Instant responses to financial queries
+-   **Personalized Advice**: Custom recommendations based on your data
 
 <p align="center">
-  <img src="images/6-white-Report.png" alt="Financial Report Light Theme" width="800"/>
+  <img src="images/5-chatbot.png" alt="AI Financial Assistant" width="800"/>
 </p>
 
-### 6. AI-Powered Results Dashboard
+### 6. AI Financial Report Generator
 
--   **Prediction Results**: Visual representation of ML model predictions
--   **Confidence Metrics**: Clear display of prediction confidence levels
--   **Risk Assessment Scores**: Comprehensive financial risk analysis
--   **Savings Recommendations**: Personalized savings amount suggestions
+-   **Multi-Model Analysis**: Combines multiple ML models for comprehensive assessment
+-   **Risk Profiling**: Advanced financial risk assessment
+-   **Savings Achievement Prediction**: ML-powered savings goal analysis
+-   **Custom Recommendations**: Tailored financial advice based on 26+ parameters
 
 <p align="center">
-  <img src="images/7-white-Result.png" alt="Results Dashboard Dark Theme" width="800"/>
+  <img src="images/6-white-Report.png" alt="AI Financial Report" width="800"/>
+</p>
+
+### 7. AI Prediction Results
+
+-   **Comprehensive Results**: Detailed breakdown of ML model predictions
+-   **Confidence Metrics**: Clear visualization of prediction reliability
+-   **Risk Assessment**: In-depth analysis of financial risk factors
+-   **Action Items**: Specific recommendations for financial improvement
+
+<p align="center">
+  <img src="images/7-white-Result.png" alt="AI Prediction Results" width="800"/>
 </p>
 
 ## 🛠️ Technology Stack
