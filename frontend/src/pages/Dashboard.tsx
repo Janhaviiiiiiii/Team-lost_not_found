@@ -99,7 +99,7 @@ const Dashboard = () => {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${displayUserData.Income?.toLocaleString() || 'N/A'}</div>
+            <div className="text-2xl font-bold">₹{displayUserData.Income?.toLocaleString() || 'N/A'}</div>
             <p className="text-xs text-muted-foreground">Current monthly income</p>
           </CardContent>
         </Card>
@@ -110,7 +110,7 @@ const Dashboard = () => {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${displayUserData.Actual_Savings_Potential?.toLocaleString() || 'N/A'}</div>
+            <div className="text-2xl font-bold">₹{displayUserData.Actual_Savings_Potential?.toLocaleString() || 'N/A'}</div>
             <p className="text-xs text-muted-foreground">Estimated based on your spending</p>
           </CardContent>
         </Card>
@@ -121,7 +121,7 @@ const Dashboard = () => {
             <Zap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${mlDisplayResults.amount_model.recommended_savings?.toLocaleString() || 'N/A'}</div>
+            <div className="text-2xl font-bold">₹{mlDisplayResults.amount_model.recommended_savings?.toLocaleString() || 'N/A'}</div>
             <Progress value={savingsGoalProgress} className="mt-2 h-2" />
             <p className="text-xs text-muted-foreground mt-1">{savingsGoalProgress.toFixed(0)}% of AI recommended goal</p>
           </CardContent>
@@ -212,7 +212,7 @@ const Dashboard = () => {
             <CardTitle>AI Recommended Action</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Consider focusing on reducing <span className="font-semibold">{/* TODO: Add dynamic suggestion, e.g., highest non-essential expense */}</span> expenses. Our AI suggests potential savings of <span className="font-semibold">${mlDisplayResults.multi_task_model?.recommended_savings_amount?.toLocaleString()}</span> are possible.</p>
+            <p>Consider focusing on reducing <span className="font-semibold">{/* TODO: Add dynamic suggestion, e.g., highest non-essential expense */}</span> expenses. Our AI suggests potential savings of <span className="font-semibold">₹{mlDisplayResults.multi_task_model?.recommended_savings_amount?.toLocaleString()}</span> are possible.</p>
             <p className="text-sm text-muted-foreground mt-2">This is an AI-generated suggestion.</p>
           </CardContent>
         </Card>
