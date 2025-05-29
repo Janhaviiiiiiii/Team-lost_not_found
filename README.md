@@ -92,10 +92,49 @@ FinBro.ai is an advanced financial management platform that leverages cutting-ed
 
 ## 🛠️ Technology Stack
 
--   **Backend**: Flask, TensorFlow, Gemini AI
--   **Frontend**: React, TypeScript, Tailwind CSS
--   **ML Models**: Attention-based Neural Networks
--   **API**: RESTful architecture
+### Backend Infrastructure
+
+-   **Server**: Flask (Python 3.8+)
+-   **ML Framework**: TensorFlow 2.15.0
+-   **AI Integration**: Google Gemini Pro API
+-   **Database**: Supabase (PostgreSQL)
+-   **API**: RESTful architecture with JSON support
+
+### Frontend Technologies
+
+-   **Framework**: React 18.3.1 with TypeScript
+-   **Styling**: Tailwind CSS with shadcn/ui components
+-   **State Management**: React Query
+-   **Routing**: React Router DOM
+-   **Theme**: Dark/Light mode with next-themes
+
+### Machine Learning
+
+-   **Model Architecture**: Attention-based Neural Networks
+-   **Training Framework**: TensorFlow with Keras API
+-   **Model Types**:
+    -   Savings Achievement Prediction (Binary Classification)
+    -   Optimal Savings Amount (Regression)
+    -   Financial Risk Assessment (Multi-task Learning)
+
+### Database Architecture (Supabase)
+
+-   **Main Tables**:
+    -   `predictions`: Stores ML model predictions and user data
+    -   `user_profiles`: User information and preferences
+    -   `financial_data`: Historical financial records
+-   **Key Features**:
+    -   Real-time data synchronization
+    -   Row-level security (RLS)
+    -   PostgreSQL functions for data processing
+
+### Development & Deployment
+
+-   **Version Control**: Git
+-   **Package Management**:
+    -   Frontend: pnpm
+    -   Backend: pip
+-   **Environment**: Node.js 18+ (Frontend), Python 3.8+ (Backend)
 
 ## 📂 Project Structure
 
@@ -103,28 +142,56 @@ FinBro.ai is an advanced financial management platform that leverages cutting-ed
 Team-lost_not_found/
 │
 ├── backend/
-│   ├── app.py           # Flask API server
-│   ├── chatBot.py       # Gemini chatbot integration
-│   └── readme.md        # API documentation
+│   ├── app.py              # Flask API server
+│   ├── chatBot.py          # Gemini AI integration
+│   ├── database.py         # Supabase service
+│   └── readme.md           # API documentation
 │
 ├── model/
-│   ├── feature_info.json
+│   ├── feature_info.json   # Model features configuration
 │   ├── trained_model/
 │   │   ├── best_savings_model.keras
 │   │   ├── best_amount_model.keras
 │   │   └── best_multi_task_model.keras
-│   └── ... (notebooks, scripts)
+│   └── notebooks/          # Training notebooks
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   └── services/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── pages/         # Route pages
+│   │   ├── services/      # API & Supabase services
+│   │   ├── hooks/         # Custom React hooks
+│   │   └── types/         # TypeScript definitions
+│   ├── public/            # Static assets
 │   └── package.json
 │
 └── data/
     └── processed_financial_data.csv
 ```
+
+## 🗄️ Database Schema
+
+### Predictions Table
+
+```sql
+CREATE TABLE predictions (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users,
+  timestamp TIMESTAMPTZ DEFAULT NOW(),
+  input_data JSONB,
+  output_data JSONB,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+### Features
+
+-   **Real-time Sync**: Live updates for predictions and user data
+-   **Data Security**: Row-level security policies
+-   **JSON Storage**: Flexible schema for ML inputs/outputs
+-   **Automatic Timestamps**: Track creation and updates
+-   **User Association**: Direct linking with auth system
 
 ## 🚀 Getting Started
 
