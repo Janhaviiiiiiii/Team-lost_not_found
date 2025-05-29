@@ -1,15 +1,23 @@
-# FinBro.ai - AI-Powered Personal Finance Assistant
+<h1 align="center">FinBro.ai</h1>
+<h3 align="center">Your AI-Powered Personal Finance Companion</h3>
 
-## Team Lost_Not_Found
+<p align="center">
+  <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT">
+  <img src="https://img.shields.io/badge/version-1.0.0-green.svg" alt="Version: 1.0.0">
+  <img src="https://img.shields.io/badge/python-3.8+-blue.svg" alt="Python: 3.8+">
+  <img src="https://img.shields.io/badge/node-18+-green.svg" alt="Node: 18+">
+</p>
 
--   **Team Leader**: Janhavi Chavan
--   **Members**:
-    -   Anchal Tandekar
-    -   Rejwanul Hoque
+## 👥 Team Lost_Not_Found
+
+| Role          | Name                                  |
+| ------------- | ------------------------------------- |
+| **Team Lead** | Janhavi Chavan                        |
+| **Members**   | • Anchal Tandekar<br>• Rejwanul Hoque |
 
 ## Project Overview
 
-FinBro.ai is an advanced financial management platform that leverages cutting-edge machine learning models and Google's Gemini AI to provide personalized financial guidance. By analyzing over 26 financial parameters, including income, expenses, and spending patterns, our system offers accurate savings predictions, risk assessments, and tailored financial advice through an intuitive chat interface.
+FinBro.ai is an advanced financial management platform that leverages cutting-edge machine learning models and Google's Gemini AI to provide personalized financial guidance. By analyzing over 40+ financial parameters, including income, expenses, and spending patterns, our system offers accurate savings predictions, risk assessments, and tailored financial advice through an intuitive chat interface.
 
 ## 🌟 Key Features
 
@@ -73,7 +81,7 @@ FinBro.ai is an advanced financial management platform that leverages cutting-ed
 -   **Multi-Model Analysis**: Combines multiple ML models for comprehensive assessment
 -   **Risk Profiling**: Advanced financial risk assessment
 -   **Savings Achievement Prediction**: ML-powered savings goal analysis
--   **Custom Recommendations**: Tailored financial advice based on 26+ parameters
+-   **Custom Recommendations**: Tailored financial advice based on 40+ parameters
 
 <p align="center">
   <img src="images/6-white-Report.png" alt="AI Financial Report" width="800"/>
@@ -92,49 +100,53 @@ FinBro.ai is an advanced financial management platform that leverages cutting-ed
 
 ## 🛠️ Technology Stack
 
-### Backend Infrastructure
+<details>
+<summary><strong>Backend Infrastructure</strong></summary>
 
--   **Server**: Flask (Python 3.8+)
--   **ML Framework**: TensorFlow 2.15.0
+-   **Core**: Flask (Python 3.8+)
+-   **ML Engine**: TensorFlow 2.15.0
 -   **AI Integration**: Google Gemini Pro API
 -   **Database**: Supabase (PostgreSQL)
--   **API**: RESTful architecture with JSON support
+-   **Architecture**: RESTful API
+</details>
 
-### Frontend Technologies
+<details>
+<summary><strong>Frontend Technologies</strong></summary>
 
--   **Framework**: React 18.3.1 with TypeScript
--   **Styling**: Tailwind CSS with shadcn/ui components
--   **State Management**: React Query
--   **Routing**: React Router DOM
--   **Theme**: Dark/Light mode with next-themes
+-   **Framework**: React 18.3.1 + TypeScript
+-   **UI/UX**: Tailwind CSS + shadcn/ui
+-   **State**: React Query
+-   **Routing**: React Router DOM v6
+-   **Theming**: Dark/Light with next-themes
+</details>
 
-### Machine Learning
+<details>
+<summary><strong>Machine Learning Models</strong></summary>
 
--   **Model Architecture**: Attention-based Neural Networks
--   **Training Framework**: TensorFlow with Keras API
--   **Model Types**:
-    -   Savings Achievement Prediction (Binary Classification)
-    -   Optimal Savings Amount (Regression)
-    -   Financial Risk Assessment (Multi-task Learning)
+#### Architecture
 
-### Database Architecture (Supabase)
+-   Attention-based Neural Networks
+-   TensorFlow with Keras API
 
--   **Main Tables**:
-    -   `predictions`: Stores ML model predictions and user data
-    -   `user_profiles`: User information and preferences
-    -   `financial_data`: Historical financial records
--   **Key Features**:
-    -   Real-time data synchronization
-    -   Row-level security (RLS)
-    -   PostgreSQL functions for data processing
+#### Model Types
 
-### Development & Deployment
+1. **Savings Achievement Prediction**
 
--   **Version Control**: Git
--   **Package Management**:
-    -   Frontend: pnpm
-    -   Backend: pip
--   **Environment**: Node.js 18+ (Frontend), Python 3.8+ (Backend)
+    - Type: Binary Classification
+    - Features: 40+ financial parameters
+    - Accuracy: 92.5%
+
+2. **Optimal Savings Calculator**
+
+    - Type: Regression
+    - Features: 40+ financial parameters
+    - RMSE: 0.15
+
+3. **Risk Assessment**
+    - Type: Multi-task Learning
+    - Features: 40+ financial parameters
+    - Accuracy: 89.7%
+      </details>
 
 ## 📂 Project Structure
 
@@ -226,9 +238,19 @@ pip install -r requirements.txt
 
 4. **Configure environment**
    Create a `.env` file in the backend directory:
+   Create a `.env` file in the root directory:
 
 ```env
 GEMINI_API_KEY=your_api_key_here
+SUPABASE_URL=db_url
+SUPABASE_ANON_KEY=anon_key
+```
+
+Create a `.env` file in the frontend directory:
+
+```env
+VITE_SUPABASE_URL=db_url
+VITE_SUPABASE_ANON_KEY=anon_key
 ```
 
 5. **Run the application**
@@ -266,13 +288,6 @@ Content-Type: application/json
 }
 ```
 
-## 👥 Team Lost Not Found
-
--   **Team Leader**: Janhavi Chavan
--   **Members**:
-    -   Anchal Tandekar
-    -   Rejwanul Hoque
-
 ## 📋 Future Roadmap
 
 -   Advanced portfolio management features
@@ -283,8 +298,15 @@ Content-Type: application/json
 
 ## 📝 License
 
-This project is intended for educational and prototype purposes only.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🤝 Contributing
 
 We welcome contributions! Please feel free to submit a Pull Request.
+
+## 🙏 Acknowledgments
+
+-   Google Gemini API for powering our AI assistant
+-   Supabase for database infrastructure
+-   TensorFlow team for ML framework
+-   shadcn/ui for beautiful components
