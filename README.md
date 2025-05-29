@@ -146,7 +146,7 @@ FinBro.ai is an advanced financial management platform that leverages cutting-ed
     - Type: Multi-task Learning
     - Features: 40+ financial parameters
     - Accuracy: 89.7%
-        </details>
+          </details>
 
 ## 📂 Project Structure
 
@@ -304,8 +304,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 We welcome contributions! Please feel free to submit a Pull Request.
 
+## 📊 Dataset
+
+Our ML models were trained on the ["Indian Personal Finance and Spending Habits"](https://www.kaggle.com/datasets/shriyashjagtap/indian-personal-finance-and-spending-habits/data) dataset from Kaggle. This comprehensive dataset contains detailed financial records that helped us build accurate prediction models.
+
+**Dataset Credits**:
+
+-   **Author**: Shriyash Jagtap
+-   **Platform**: Kaggle
+-   **Used for**: Training our savings prediction, risk assessment, and financial advice models
+
 ## 🙏 Acknowledgments
 
+-   Shriyash Jagtap for providing the comprehensive financial dataset
 -   Google Gemini API for powering our AI assistant
 -   Supabase for database infrastructure
 -   TensorFlow team for ML framework
