@@ -10,10 +10,10 @@
 
 ## 👥 Team Lost_Not_Found
 
-| Role          | Name                                  |
-| ------------- | ------------------------------------- |
-| **Team Lead** | Janhavi Chavan                        |
-| **Members**   | • Anchal Tandekar<br>• Rejwanul Hoque |
+| Role          | Name                               |
+| ------------- | ---------------------------------- |
+| **Team Lead** | Janhavi Chavan                     |
+| **Members**   | Anchal Tandekar<br> Rejwanul Hoque |
 
 ## Project Overview
 
@@ -146,7 +146,7 @@ FinBro.ai is an advanced financial management platform that leverages cutting-ed
     - Type: Multi-task Learning
     - Features: 40+ financial parameters
     - Accuracy: 89.7%
-      </details>
+          </details>
 
 ## 📂 Project Structure
 
