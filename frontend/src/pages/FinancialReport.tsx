@@ -354,7 +354,7 @@ const FinancialReport = () => {
                   <div className="p-6 bg-white/50 dark:bg-black/20 rounded-xl">
                     <h3 className="text-lg font-semibold mb-2">Standard Model</h3>
                     <p className="text-3xl font-bold text-blue-600">
-                      ${mlResponse.amount_model.recommended_savings.toLocaleString()}
+                      ₹{mlResponse.amount_model.recommended_savings.toLocaleString()}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">Recommended annual savings</p>
                   </div>
@@ -364,7 +364,7 @@ const FinancialReport = () => {
                   <div className="p-6 bg-white/50 dark:bg-black/20 rounded-xl">
                     <h3 className="text-lg font-semibold mb-2">Multi-Task AI Model</h3>
                     <p className="text-3xl font-bold text-indigo-600">
-                      ${mlResponse.multi_task_model.recommended_savings_amount.toLocaleString()}
+                      ₹{mlResponse.multi_task_model.recommended_savings_amount.toLocaleString()}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">Advanced AI recommendation</p>
                     <div className="mt-3 flex items-center space-x-2">

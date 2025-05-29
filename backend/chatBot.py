@@ -147,6 +147,7 @@ Instructions:
 - For finance questions: Use their data to give personalized advice
 - For general questions: Answer normally without forcing financial data
 - Keep all responses under 100 words and conversational
+- Always give response in plain text, do not use any ** or formatting
 """
 
         # Generate content using the client (simplified approach)

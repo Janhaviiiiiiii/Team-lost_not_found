@@ -1,6 +1,6 @@
-flask==2.3.3
-numpy==1.26.4
-tensorflow>=2.16.0
-google-genai==0.3.2
-python-dotenv==1.0.1
-supabase==2.8.1
+flask
+numpy
+tensorflow
+google-genai
+python-dotenv
+supabase
