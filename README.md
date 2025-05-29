@@ -146,7 +146,7 @@ FinBro.ai is an advanced financial management platform that leverages cutting-ed
     - Type: Multi-task Learning
     - Features: 40+ financial parameters
     - Accuracy: 89.7%
-          </details>
+        </details>
 
 ## 📂 Project Structure
 
@@ -253,7 +253,7 @@ VITE_SUPABASE_URL=db_url
 VITE_SUPABASE_ANON_KEY=anon_key
 ```
 
-5. **Run the application**
+5. **Run the application from root directory**
 
 ```bash
 python run.py
@@ -266,7 +266,7 @@ The application will be available at `http://localhost:5000`
 ### 1. Predictions API
 
 ```bash
-POST /predict
+POST /api/predict
 Content-Type: application/json
 
 {
@@ -280,7 +280,7 @@ Content-Type: application/json
 ### 2. Chat API
 
 ```bash
-POST /chat
+POST /api/chat
 Content-Type: application/json
 
 {
