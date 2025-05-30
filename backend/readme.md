@@ -1,4 +1,4 @@
-local api url: http://localhost:5000/predict
+local api url: http://localhost:5000/api/predict
 
 test json: 
 {
